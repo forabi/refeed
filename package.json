@@ -25,8 +25,9 @@
   "homepage": "https://github.com/forabi/refeed",
   "dependencies": {
     "cheerio": "^0.17.0",
-    "feed": "^0.2.6",
+    "express": "^4.6.1",
     "lodash": "^2.4.1",
-    "phantomjs": "^1.9.7-14"
+    "request": "^2.37.0",
+    "rss": "^0.3.2"
   }
 }
