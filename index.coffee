@@ -1,6 +1,7 @@
 defaults   = require './defaults.json'
 
 _          = require 'lodash'
+async      = require 'async'
 fs         = require 'fs'
 url        = require 'url'
 
@@ -10,25 +11,41 @@ request    = require 'request'
 PageLoader = require './models/page-loader'
 PageParser = require './models/page-parser'
 
-json       = require './tmp/hindawi.json'
+json       = require './json/hindawi.json'
 
-loader = new PageLoader json.url
 
-loader.on 'pageLoaded', (html) ->
-    feed   = new Feed title: json.title, description: json.description, site_url: json.url
-    parser = new PageParser json.host, html, json.selectors
+feed       = new Feed title: json.title, description: json.description, site_url: json.url
+pageUrl    = json.url
+hasNext    = -> yes
 
-    parser.on 'item', (item) ->
-        feed.item item
 
-    parser.on 'end', ->
-        xml = feed.xml()
-        fs.writeFileSync './tmp/hindawi.xml', xml
-        process.stdout.write 'Feed should be ready!'
+writeFile = ->
+    xml = feed.xml()
+    fs.writeFileSync './feeds/hindawi.xml', xml
+    process.stdout.write 'Feed should be ready!\n'
 
-    parser.start()
+loadPage = (done) ->
+    process.stdout.write "Loading page #{pageUrl}\n"
+    
+    loader = new PageLoader pageUrl
+    loader.on 'pageLoaded', (html) ->  
+        parser = new PageParser json.host, html, json.selectors
 
-loader.on 'error', (err) ->
-    process.sterr.write err
+        parser.on 'item', (item) ->
+            feed.item item
 
-loader.load _.defaults(json, defaults)
+        parser.on 'end', ->
+            hasNext = -> parser.hasNext
+            if hasNext then pageUrl = parser.nextPage
+            done()
+
+        parser.start()
+
+    loader.on 'error', (err) ->
+        process.sterr.write err
+        done err
+
+    loader.load _.defaults(json, defaults)
+
+
+async.doWhilst loadPage, hasNext, writeFile

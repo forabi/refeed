@@ -1,4 +1,4 @@
 var express = require('express');
 var app = express();
-app.use(express.static(__dirname + '/tmp'));
-app.listen(process.env.PORT || 3001);
+app.use(express.static(__dirname + '/feeds'));
+app.listen(3000);

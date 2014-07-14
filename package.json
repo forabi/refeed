@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/forabi/refeed",
   "dependencies": {
+    "async": "^0.9.0",
     "cheerio": "^0.17.0",
     "coffee-script": "^1.7.1",
     "express": "^4.6.1",

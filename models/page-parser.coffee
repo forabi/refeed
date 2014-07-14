@@ -5,10 +5,11 @@ cheerio      = require 'cheerio'
 module.exports = class PageParser extends EventEmitter
     constructor: (@host, @html, @selectors) ->
         super()
+        @$ = cheerio.load @html
     
     start: ->
         self = this
-        $ = cheerio.load @html
+        $ = @$
         $(@selectors.item.block).each ->
             $block = $ @
             item =
@@ -21,3 +22,15 @@ module.exports = class PageParser extends EventEmitter
             self.emit 'item', item
 
         self.emit 'end'
+
+    Object.defineProperty this.prototype, 'nextPage', 
+        get: ->
+            element = @$(@selectors.nextPage)
+            href = if element.is('a') then element.attr('href')
+            else element.find('a').attr('href') || null
+
+            url.resolve @host, href
+
+    Object.defineProperty this.prototype, 'hasNext', 
+        get: ->
+            @$(@selectors.nextPage).length
