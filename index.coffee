@@ -2,6 +2,7 @@ defaults   = require './defaults.json'
 
 _          = require 'lodash'
 fs         = require 'fs'
+url        = require 'url'
 
 Feed       = require 'rss'
 request    = require 'request'
@@ -11,14 +12,14 @@ PageParser = require './models/page-parser'
 
 json       = require './tmp/hindawi.json'
 
-
 loader = new PageLoader json.url
 
 loader.on 'pageLoaded', (html) ->
     feed   = new Feed title: json.title, description: json.description, site_url: json.url
-    parser = new PageParser html, json.selectors
+    parser = new PageParser json.host, html, json.selectors
 
-    parser.on 'item', (item) -> feed.item item
+    parser.on 'item', (item) ->
+        feed.item item
 
     parser.on 'end', ->
         xml = feed.xml()

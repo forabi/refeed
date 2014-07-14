@@ -1,5 +1,5 @@
 EventEmitter = require('events').EventEmitter
-request    = require 'request'
+request      = require 'request'
 
 module.exports = class PageLoader extends EventEmitter   
     constructor: (@url) -> super()

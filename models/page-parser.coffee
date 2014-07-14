@@ -1,8 +1,9 @@
 EventEmitter = require('events').EventEmitter
+url          = require 'url'
 cheerio      = require 'cheerio'
 
 module.exports = class PageParser extends EventEmitter
-    constructor: (@html, @selectors) ->
+    constructor: (@host, @html, @selectors) ->
         super()
     
     start: ->
@@ -15,7 +16,7 @@ module.exports = class PageParser extends EventEmitter
                 author:
                     name: $block.find(self.selectors.item.author).text()
                 description: $block.find(self.selectors.item.description).html()
-                url: $block.find(self.selectors.item.link).attr('href')
+                url: url.resolve self.host, $block.find(self.selectors.item.link).attr('href')
 
             self.emit 'item', item
 
