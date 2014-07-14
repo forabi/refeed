@@ -1,35 +1,30 @@
-defaults = require './defaults.json'
+defaults   = require './defaults.json'
 
-_        = require 'lodash'
-fs       = require 'fs'
-cheerio  = require 'cheerio'
-Feed     = require 'rss'
-request  = require 'request'
+_          = require 'lodash'
+fs         = require 'fs'
 
-json     = require './hindawi.json'
+Feed       = require 'rss'
+request    = require 'request'
+
+PageParser = require './models/page-parser'
+
+json       = require './tmp/hindawi.json'
 
 request _.defaults(json, defaults), (err, res) ->
     
-    process.sterr.write err if err;
+    return process.sterr.write err if err;
     
     process.stdout.write 'Got HTML!'
     
-    $ = cheerio.load res.body
-    feed = new Feed title: json.title, description: json.description, site_url: json.url
+    feed   = new Feed title: json.title, description: json.description, site_url: json.url
 
-    process.stdout.write 'Feed should be ready!'
+    parser = new PageParser res.body, json.selectors
     
+    parser.on 'item', (item) -> feed.item item
 
-    $(json.selectors.item.block).each ->
-        $block = $ @
-        item =
-            title: $block.find(json.selectors.item.title).text(),
-            author:
-                name: $block.find(json.selectors.item.author).text()
-            description: $block.find(json.selectors.item.description).html(),
-            url: $block.find(json.selectors.item.link).attr('href')
-        
-        feed.item(item);
+    parser.on 'end', ->
+        xml = feed.xml()
+        fs.writeFileSync './tmp/hindawi.xml', xml
+        process.stdout.write 'Feed should be ready!'
 
-    xml = feed.xml()
-    fs.writeFileSync 'hindawi.xml', xml
+    parser.start()
