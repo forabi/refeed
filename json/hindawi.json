@@ -1,0 +1,15 @@
+{
+    "title": "مؤسسة هنداوي",
+    "host": "http://www.hindawi.org/",
+    "url": "http://www.hindawi.org/books/",
+    "selectors": {
+        "item": {
+            "block": ".text_area",
+            "title": "h1",
+            "author": "h2",
+            "description": ".content_text",
+            "link": "h1 a"
+        },
+        "nextPage": ".next_float"
+    }
+}

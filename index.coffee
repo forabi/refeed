@@ -35,7 +35,7 @@ loadPage = (done) ->
             feed.item item
 
         parser.on 'end', ->
-            hasNext = -> parser.hasNext
+            hasNext = -> parser.hasNext and typeof pageUrl is 'string'
             if hasNext then pageUrl = parser.nextPage
             done()
 

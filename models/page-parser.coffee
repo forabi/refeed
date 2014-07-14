@@ -27,9 +27,9 @@ module.exports = class PageParser extends EventEmitter
         get: ->
             element = @$(@selectors.nextPage)
             href = if element.is('a') then element.attr('href')
-            else element.find('a').attr('href') || null
+            else element.find('a').attr('href') || ''
 
-            url.resolve @host, href
+            if url then url.resolve @host, href else null
 
     Object.defineProperty this.prototype, 'hasNext', 
         get: ->
