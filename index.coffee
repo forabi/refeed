@@ -6,20 +6,18 @@ fs         = require 'fs'
 Feed       = require 'rss'
 request    = require 'request'
 
+PageLoader = require './models/page-loader'
 PageParser = require './models/page-parser'
 
 json       = require './tmp/hindawi.json'
 
-request _.defaults(json, defaults), (err, res) ->
-    
-    return process.sterr.write err if err;
-    
-    process.stdout.write 'Got HTML!'
-    
-    feed   = new Feed title: json.title, description: json.description, site_url: json.url
 
-    parser = new PageParser res.body, json.selectors
-    
+loader = new PageLoader json.url
+
+loader.on 'pageLoaded', (html) ->
+    feed   = new Feed title: json.title, description: json.description, site_url: json.url
+    parser = new PageParser html, json.selectors
+
     parser.on 'item', (item) -> feed.item item
 
     parser.on 'end', ->
@@ -28,3 +26,8 @@ request _.defaults(json, defaults), (err, res) ->
         process.stdout.write 'Feed should be ready!'
 
     parser.start()
+
+loader.on 'error', (err) ->
+    process.sterr.write err
+
+loader.load _.defaults(json, defaults)

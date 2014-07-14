@@ -1,7 +1,7 @@
 EventEmitter = require('events').EventEmitter
 cheerio      = require 'cheerio'
 
-class PageParser extends EventEmitter
+module.exports = class PageParser extends EventEmitter
     constructor: (@html, @selectors) ->
         super()
     
@@ -20,5 +20,3 @@ class PageParser extends EventEmitter
             self.emit 'item', item
 
         self.emit 'end'
-
-module.exports = PageParser
