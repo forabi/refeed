@@ -6,4 +6,4 @@ app.use(express.static(__dirname + '/feeds'));
 app.listen(3000);
 
 // Start generating feeds and throw them in ./feeds/
-require('index.js')
+require('./index.js')
