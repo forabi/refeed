@@ -16,7 +16,9 @@ json       = require './json/hindawi.json'
 
 feed       = new Feed title: json.title, description: json.description, site_url: json.url
 pageUrl    = json.url
-hasNext    = -> yes
+loaded     = 0
+parser     = null
+hasNext    = -> loaded < 4 and parser.hasNext and typeof pageUrl is 'string'
 
 
 writeFile = ->
@@ -25,7 +27,7 @@ writeFile = ->
     process.stdout.write 'Feed should be ready!\n'
 
 loadPage = (done) ->
-    process.stdout.write "Loading page #{pageUrl}\n"
+    process.stdout.write "Loading page #{pageUrl}\n, total pages loaded: #{loaded}"
     
     loader = new PageLoader pageUrl
     loader.on 'pageLoaded', (html) ->  
@@ -35,14 +37,15 @@ loadPage = (done) ->
             feed.item item
 
         parser.on 'end', ->
-            hasNext = -> parser.hasNext and typeof pageUrl is 'string'
-            if hasNext then pageUrl = parser.nextPage
+            loaded += 1
+            if hasNext
+                pageUrl = parser.nextPage
             done()
 
         parser.start()
 
     loader.on 'error', (err) ->
-        process.sterr.write err
+        process.stderr.write err
         done err
 
     loader.load _.defaults(json, defaults)
