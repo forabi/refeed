@@ -5,7 +5,7 @@ FeedGenerator = require './models/feed-generator'
 
 updateFeed = ->
 	generator = new FeedGenerator 'hindawi', require './json/hindawi.json'
-	generator.maxPages = 1
+	# generator.maxPages = 1
 	generator.on 'end', (xml) ->
 		fs.writeFileSync './feeds/hindawi.xml', xml
 		console.log 'Feed hindawi updated'
