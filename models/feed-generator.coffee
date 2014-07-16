@@ -16,7 +16,7 @@ PageLoader = require './page-loader'
 PageParser = require './page-parser'
 
 module.exports = class FeedGenerator extends EventEmitter
-    constructor: (@feed_id, @config) ->
+    constructor: (@feed_id, @config, xmlFile) ->
         @feed = new Feed
             title: config.title
             description: config.description
@@ -27,7 +27,7 @@ module.exports = class FeedGenerator extends EventEmitter
         
         # Read file if exists, get the last entry guid we fetched
         @cachedFeed =
-            path: "./feeds/#{feed_id}.xml"
+            path: xmlFile
             $: null
             lastArticleUrl: null
 
