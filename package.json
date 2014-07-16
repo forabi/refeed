@@ -29,6 +29,7 @@
     "coffee-script": "^1.7.1",
     "express": "^4.6.1",
     "lodash": "^2.4.1",
+    "moment": "^2.7.0",
     "request": "^2.37.0",
     "rss": "^0.3.2"
   }

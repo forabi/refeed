@@ -2,6 +2,7 @@
     "title": "مؤسسة هنداوي",
     "host": "http://www.hindawi.org/",
     "url": "http://www.hindawi.org/books/",
+    "locale": "ar",
     "selectors": {
         "item": {
             "block": ".text_area",

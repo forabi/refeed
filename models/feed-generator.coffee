@@ -63,18 +63,17 @@ module.exports = class FeedGenerator extends EventEmitter
             @.emit 'end', xml
 
         loadPage = (done) =>
-            self = this
             process.stdout.write "Loading page #{pageUrl}\n, total pages loaded: #{loaded}\n"
             
             loader = new PageLoader pageUrl
-            loader.on 'pageLoaded', (html) ->  
-                parser = new PageParser self.config.host, html, self.config.selectors
+            loader.on 'pageLoaded', (html) =>  
+                parser = new PageParser @config.host, html, @config
 
-                parser.on 'item', (item) ->
-                    self.feed.item item
+                parser.on 'item', (item) =>
+                    @feed.item item
                     articles.push item.url
 
-                parser.on 'end', ->
+                parser.on 'end', =>
                     loaded += 1
                     if parser.hasNext
                         pageUrl = parser.nextPage

@@ -1,27 +1,30 @@
 EventEmitter = require('events').EventEmitter
 url          = require 'url'
 cheerio      = require 'cheerio'
+moment       = require 'moment'
 
 module.exports = class PageParser extends EventEmitter
-    constructor: (@host, @html, @selectors) ->
+    constructor: (@host, @html, @config) ->
         super()
         @$ = cheerio.load @html
+        @selectors = @config.selectors
+        moment.lang @config.locale
     
     start: ->
         self = this
-        $ = @$
+        $ = this.$
         $(@selectors.item.block).each ->
-            $block = $ @
+            $block = $(this)
             item =
                 title: $block.find(self.selectors.item.title).text()
-                author:
-                    name: $block.find(self.selectors.item.author).text()
+                author: $block.find(self.selectors.item.author).text()
                 description: $block.find(self.selectors.item.description).html()
                 url: url.resolve self.host, $block.find(self.selectors.item.link).attr('href')
+                date: moment($block.find(self.selectors.item.pubDate).text() || new Date)
 
             self.emit 'item', item
 
-        self.emit 'end'
+        @emit 'end'
 
     Object.defineProperty this.prototype, 'nextPage', 
         get: ->
