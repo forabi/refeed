@@ -12,7 +12,7 @@ FeedGenerator = require './models/feed-generator'
 
 mkdirp.sync feedsDir = path.join config.dirs.root, config.dirs.feeds
 
-updateFeed = (feed_id) ->
+updateFeed = (feedId) ->
     xmlFile = path.join feedsDir, "#{feedId}.xml"
     feedConfig = _.defaults require("./json/#{feedId}.json"), defaults
 

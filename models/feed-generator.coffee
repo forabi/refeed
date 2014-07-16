@@ -29,7 +29,7 @@ module.exports = class FeedGenerator extends EventEmitter
             $: null
             lastArticleUrl: null
 
-        if fs.existsSync @cachedFeed.path
+        if @cachedFeed.xmlFile and fs.existsSync @cachedFeed.path
             console.log "Reusing cached feed file #{@cachedFeed.path}"
 
             xml = fs.readFileSync(@cachedFeed.path).toString()
