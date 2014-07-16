@@ -22,7 +22,7 @@ updateFeed = ->
     
     generator.generate()
 
-setTimeout ->
+setInterval ->
     updateFeed()
 , 2 * HOUR
 
