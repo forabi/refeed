@@ -3,11 +3,14 @@ HOUR = 3600000
 config        = require './config.js'
 
 fs            = require 'fs'
+path          = require 'path'
 FeedGenerator = require './models/feed-generator'
 
 updateFeed = ->
-    xmlFile = "#{config.dirs.feeds}/feeds/hindawi.xml"
-    generator = new FeedGenerator 'hindawi', require('./json/hindawi.json'), xmlFile
+    xmlFile = path.join config.dirs.feeds, 'feeds/hindawi.xml'
+    feedConfig = require('./json/hindawi.json')
+
+    generator = new FeedGenerator 'hindawi', feedConfig, xmlFile
     # generator.maxPages = 3
     generator.on 'end', (xml) ->
         fs.writeFileSync xmlFile, xml
