@@ -14,7 +14,7 @@ PageLoader = require './page-loader'
 PageParser = require './page-parser'
 
 module.exports = class FeedGenerator extends EventEmitter
-    constructor: (@feed_id, @config, xmlFile) ->
+    constructor: (@feedId, @config, xmlFile) ->
         @feed = new Feed
             title: config.title
             description: config.description
@@ -22,7 +22,7 @@ module.exports = class FeedGenerator extends EventEmitter
             language: config.language
 
         console.log 'Feed created'
-        
+
         # Read file if exists, get the last entry guid we fetched
         @cachedFeed =
             path: xmlFile
@@ -31,10 +31,10 @@ module.exports = class FeedGenerator extends EventEmitter
 
         if fs.existsSync @cachedFeed.path
             console.log "Reusing cached feed file #{@cachedFeed.path}"
-            
+
             xml = fs.readFileSync(@cachedFeed.path).toString()
             console.log "Cached feed XML length is #{xml.length}"
-            
+
             @cachedFeed.$ = cheerio.load xml, xmlMode: yes
             @cachedFeed.lastArticleUrl = @cachedFeed.$('item').first().find('link').text()
 
@@ -49,7 +49,7 @@ module.exports = class FeedGenerator extends EventEmitter
         loaded         = 0
         articles       = []
         parser         = null
-        
+
         noMoreArticles = =>
             (loaded >= @maxPages) or
             (typeof pageUrl isnt 'string') or
@@ -63,9 +63,9 @@ module.exports = class FeedGenerator extends EventEmitter
 
         loadPage = (done) =>
             process.stdout.write "Loading page ##{loaded + 1} (#{pageUrl})\n"
-            
+
             loader = new PageLoader pageUrl
-            loader.on 'pageLoaded', (html) =>  
+            loader.on 'pageLoaded', (html) =>
                 parser = new PageParser @config.host, html, @config
 
                 parser.on 'item', (item) =>
