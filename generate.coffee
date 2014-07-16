@@ -6,12 +6,13 @@ fs            = require 'fs'
 path          = require 'path'
 mkdirp        = require 'mkdirp'
 
-mkdirp.sync config.dirs.feeds
-
 FeedGenerator = require './models/feed-generator'
 
+feedsDir path.join config.dirs.root, 'feeds'
+mkdirp.sync feedsDir
+
 updateFeed = ->
-    xmlFile = path.join config.dirs.feeds, 'feeds/hindawi.xml'
+    xmlFile = path.join feedsDir, 'hindawi.xml'
     feedConfig = require './json/hindawi.json'
 
     generator = new FeedGenerator 'hindawi', feedConfig, xmlFile
