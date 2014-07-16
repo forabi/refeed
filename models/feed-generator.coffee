@@ -21,6 +21,7 @@ module.exports = class FeedGenerator extends EventEmitter
             title: config.title
             description: config.description
             site_url: config.url
+            language: config.language
 
         console.log 'Feed created'
         

@@ -8,7 +8,7 @@ module.exports = class PageParser extends EventEmitter
         super()
         @$ = cheerio.load @html
         @selectors = @config.selectors
-        moment.lang @config.locale
+        moment.lang @config.language
     
     start: ->
         self = this
