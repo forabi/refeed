@@ -4,11 +4,15 @@ config        = require './config.js'
 
 fs            = require 'fs'
 path          = require 'path'
+mkdirp        = require 'mkdirp'
+
+mkdirp.sync config.dirs.feeds
+
 FeedGenerator = require './models/feed-generator'
 
 updateFeed = ->
     xmlFile = path.join config.dirs.feeds, 'feeds/hindawi.xml'
-    feedConfig = require('./json/hindawi.json')
+    feedConfig = require './json/hindawi.json'
 
     generator = new FeedGenerator 'hindawi', feedConfig, xmlFile
     # generator.maxPages = 3
