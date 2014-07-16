@@ -1,6 +1,6 @@
 HOUR = 3600000
 
-config        = require 'config.js'
+config        = require './config.js'
 
 fs            = require 'fs'
 FeedGenerator = require './models/feed-generator'
