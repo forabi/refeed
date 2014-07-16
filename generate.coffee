@@ -8,7 +8,7 @@ mkdirp        = require 'mkdirp'
 
 FeedGenerator = require './models/feed-generator'
 
-feedsDir path.join config.dirs.root, 'feeds'
+feedsDir = path.join config.dirs.root, 'feeds'
 mkdirp.sync feedsDir
 
 updateFeed = ->
