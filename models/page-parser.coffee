@@ -6,8 +6,8 @@ moment       = require 'moment'
 module.exports = class PageParser extends EventEmitter
     constructor: (@host, @html, @config) ->
         super()
-        @$ = cheerio.load @html
-        @selectors = @config.selectors
+        this.$ = cheerio.load @html
+        this.selectors = @config.selectors
         moment.lang @config.language
     
     start: ->
@@ -30,12 +30,12 @@ module.exports = class PageParser extends EventEmitter
 
     Object.defineProperty this.prototype, 'nextPage', 
         get: ->
-            element = @$(@selectors.nextPage)
+            element = this.$(@selectors.nextPage)
             href = if element.is('a') then element.attr('href')
             else element.find('a').attr('href') || ''
 
             if url then url.resolve @host, href else null
 
-    Object.defineProperty this.prototype, 'hasNext', 
+    Object.defineProperty @prototype, 'hasNext', 
         get: ->
-            @$(@selectors.nextPage).length
+            this.$(@selectors.nextPage).length

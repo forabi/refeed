@@ -1,7 +1,5 @@
 EventEmitter = require('events').EventEmitter
 
-defaults   = require '../defaults.json'
-
 _          = require 'lodash'
 async      = require 'async'
 fs         = require 'fs'
@@ -59,12 +57,12 @@ module.exports = class FeedGenerator extends EventEmitter
             (!!parser and not parser.hasNext)
 
         end = =>
-            xml = @.feed.xml()
-            process.stdout.write 'Feed should be ready!\n'
-            @.emit 'end', xml
+            xml = @feed.xml()
+            process.stdout.write 'Feed is ready be written!\n'
+            @emit 'end', xml
 
         loadPage = (done) =>
-            process.stdout.write "Loading page #{pageUrl}\n, total pages loaded: #{loaded}\n"
+            process.stdout.write "Loading page ##{loaded + 1} (#{pageUrl})\n"
             
             loader = new PageLoader pageUrl
             loader.on 'pageLoaded', (html) =>  
@@ -86,6 +84,6 @@ module.exports = class FeedGenerator extends EventEmitter
                 process.stderr.write err
                 done err
 
-            loader.load _.defaults(@config, defaults)
+            loader.load @config
 
         async.until noMoreArticles, loadPage, end
