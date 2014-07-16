@@ -8,10 +8,10 @@ mkdirp        = require 'mkdirp'
 
 FeedGenerator = require './models/feed-generator'
 
-mkdirp.sync config.dirs.feeds
+mkdirp.sync feedsDir = path.join config.dirs.root, config.dirs.feeds
 
 updateFeed = ->
-    xmlFile = path.join config.dirs.feeds, 'hindawi.xml'
+    xmlFile = path.join feedsDir, 'hindawi.xml'
     feedConfig = require './json/hindawi.json'
 
     generator = new FeedGenerator 'hindawi', feedConfig, xmlFile
