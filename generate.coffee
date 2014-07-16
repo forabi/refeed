@@ -4,6 +4,7 @@ config        = require './config.js'
 defaults      = require './defaults.json'
 
 fs            = require 'fs'
+_             = require 'lodash'
 path          = require 'path'
 mkdirp        = require 'mkdirp'
 
