@@ -11,6 +11,8 @@ module.exports = class PageParser extends EventEmitter
         moment.lang @config.language
     
     start: ->
+        date = new Date
+        totalItems = 0
         self = this
         $ = this.$
         $(@selectors.item.block).each ->
@@ -20,7 +22,7 @@ module.exports = class PageParser extends EventEmitter
                 author: $block.find(self.selectors.item.author).text()
                 description: $block.find(self.selectors.item.description).html()
                 url: url.resolve self.host, $block.find(self.selectors.item.link).attr('href')
-                date: moment($block.find(self.selectors.item.pubDate).text() || new Date)
+                date: moment($block.find(self.selectors.item.pubDate).text() || date - ++totalItems)
 
             self.emit 'item', item
 
