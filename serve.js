@@ -4,6 +4,6 @@ var app = express();
 
 // Spin up a static server
 app.use(express.static(config.dirs.feeds + '/feeds'));
-app.listen(config.port || 3000);
+app.listen(config.port || 8080);
 
 require('./generate.js');
