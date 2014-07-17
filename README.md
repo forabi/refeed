@@ -21,7 +21,7 @@ The core is the engine that takes care of fetching, caching and updating the RSS
 * Update the last check time of each feed in the database.
 * A static file server serves the XML files.
 
-Client (not implemented )
+Client (not implemented)
 -----------------------------
 The client part of reFeed provides a usable interface that facilitates searching, creating and fetching of generated feeds.
 
