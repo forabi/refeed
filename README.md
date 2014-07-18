@@ -33,6 +33,6 @@ The client part of reFeed provides a usable interface that facilitates searching
 
     2.  If more than one match are found, a list of the matches is displayed with title, description and website URL for each match.
 
-    3. If nothing is found, and the input matches a valid URL pattern, the client tries to generate/find at least one feed on that URL. The results are then display in a similar way to the one described in a or b.
+    3. If nothing is found, and the input matches a valid URL pattern, the client tries to generate/find at least one feed on that URL. The results are then displayed in a similar way to the one described in a or b.
 
 [...]
