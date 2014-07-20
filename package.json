@@ -1,7 +1,7 @@
 {
   "name": "Refeed",
   "version": "0.0.1",
-  "description": "A service that provides RSS feeds for websites that do not offer them.",
+  "description": "A service that offers RSS feeds for websites that do not natively provide them.",
   "main": "serve.js",
   "scripts": {
     "start": "node serve.js",
@@ -32,7 +32,11 @@
     "lodash": "^2.4.1",
     "mkdirp": "^0.5.0",
     "moment": "^2.7.0",
+    "mongodb": "^1.4.7",
     "request": "^2.37.0",
     "rss": "^0.3.2"
+  },
+  "devDependencies": {
+    "codo": "^2.0.9"
   }
 }
