@@ -1,0 +1,11 @@
+{
+    "selectors": {
+        "item": {
+            "block": "item",
+            "title": "title",
+            "author": "author",
+            "description": "description",
+            "link": "link"
+        }
+    }
+}

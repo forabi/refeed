@@ -8,6 +8,7 @@ url        = require 'url'
 cheerio    = require 'cheerio'
 
 Feed       = require 'rss'
+CachedFeed = require './cached-feed'
 request    = require 'request'
 
 PageLoader = require './page-loader'
@@ -16,41 +17,23 @@ PageParser = require './page-parser'
 module.exports = class FeedGenerator extends EventEmitter
     ###
     @param [String] feedId the unique identifier of the feed to generate
-    @param [Object] config
-    @param [String] xmlFile path to an XML file representing a cached version of the feed
+    @param [Object] Feed configuration object
+    @param [String] xmlFile Path to an XML file representing a cached version of the feed
     ###
-    constructor: (@feedId, @config, xmlFile) ->
+    constructor: (@feedId, @config, cachedXMLPath) ->
         self = this
+        feedConfig = _.extend @config, site_url: config.url
 
-        @feed = new Feed
-            title: config.title
-            description: config.description
-            site_url: config.url
-            language: config.language
-
-        console.log 'Feed created'
-
-        # Read file if exists, get the last entry guid we fetched
-        @cachedFeed =
-            path: xmlFile
-            $: null
-            lastArticleUrl: null
-
-        if @cachedFeed.xmlFile and fs.existsSync @cachedFeed.path
-            console.log "Reusing cached feed file #{@cachedFeed.path}"
-
-            xml = fs.readFileSync(@cachedFeed.path).toString()
+        try
+            xml = fs.readFileSync(cachedXMLPath).toString()
+            @feed = new CachedFeed xml, feedConfig
+            console.log "Reusing cached feed file #{cachedXMLPath}"
             console.log "Cached feed XML length is #{xml.length}"
-
-            @cachedFeed.$ = cheerio.load xml, xmlMode: yes
-            @cachedFeed.lastArticleUrl = @cachedFeed.$('item').first().find('link').text()
-
-            # Add previously cached items to the feed
-            @cachedFeed.$('item').each ->
-                self.feed.item(this)
-
-            console.log "Last cached article is #{@cachedFeed.lastArticleUrl}"
-        else console.log "Cached file does not exist, was expected at #{@cachedFeed.path}"
+            console.log "Last cached article is #{@feed.lastArticleUrl}"
+        catch e
+            @feed = new Feed feedConfig
+            console.log "Something went wrong while laoding the cached feed,
+            was expected at #{cachedXMLPath}", e
 
     ###
     @property [Number] The maximum number of pages to load, each page instantiates a new PageLoader
@@ -70,7 +53,7 @@ module.exports = class FeedGenerator extends EventEmitter
         noMoreArticles = =>
             (loaded >= @maxPages) or
             (typeof pageUrl isnt 'string') or
-            (_.contains articles, @cachedFeed.lastArticleUrl) or
+            (_.contains articles, @feed.lastArticleUrl) or
             (!!parser and not parser.hasNext)
 
         end = =>
@@ -83,7 +66,7 @@ module.exports = class FeedGenerator extends EventEmitter
 
             loader = new PageLoader pageUrl
             loader.on 'pageLoaded', (html) =>
-                parser = new PageParser @config.host, html, @config
+                parser = new PageParser html, @config
 
                 parser.on 'item', (item) =>
                     @feed.item item

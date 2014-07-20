@@ -4,24 +4,32 @@ cheerio      = require 'cheerio'
 moment       = require 'moment'
 
 module.exports = class PageParser extends EventEmitter
-    constructor: (@host, @html, @config) ->
+    constructor: (@html, @config) ->
         super()
-        this.$ = cheerio.load @html
+        this.$ = cheerio.load @html, xmlMode: yes
         this.selectors = @config.selectors
-        moment.lang @config.language
+        try moment.lang @config.language
 
     start: ->
         date = new Date
         totalItems = 0
         self = this
         $ = this.$
+        console.log self.config.host, 'HOST'
         $(@selectors.item.block).each ->
             $block = $(this)
             item =
                 title: try $block.find(self.selectors.item.title).text()
                 author: $block.find(self.selectors.item.author).text()
                 description: $block.find(self.selectors.item.description).html()
-                url: url.resolve self.host, $block.find(self.selectors.item.link).attr('href')
+                url: (->
+                    el = $block.find(self.selectors.item.link)
+                    relative = el.attr('href') || el.text()
+                    try
+                        url.resolve(self.config.host, relative)
+                    catch
+                        relative
+                )()
                 date: moment($block.find(self.selectors.item.date).text() || date - ++totalItems)
 
             self.emit 'item', item
@@ -34,7 +42,7 @@ module.exports = class PageParser extends EventEmitter
             href = if element.is('a') then element.attr('href')
             else element.find('a').attr('href') || ''
 
-            if url then url.resolve @host, href else null
+            if url then url.resolve @config.host, href else null
 
     Object.defineProperty @prototype, 'hasNext',
         get: ->
