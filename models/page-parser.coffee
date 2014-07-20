@@ -9,7 +9,7 @@ module.exports = class PageParser extends EventEmitter
         this.$ = cheerio.load @html
         this.selectors = @config.selectors
         moment.lang @config.language
-    
+
     start: ->
         date = new Date
         totalItems = 0
@@ -18,17 +18,17 @@ module.exports = class PageParser extends EventEmitter
         $(@selectors.item.block).each ->
             $block = $(this)
             item =
-                title: $block.find(self.selectors.item.title).text()
+                title: try $block.find(self.selectors.item.title).text()
                 author: $block.find(self.selectors.item.author).text()
                 description: $block.find(self.selectors.item.description).html()
                 url: url.resolve self.host, $block.find(self.selectors.item.link).attr('href')
-                date: moment($block.find(self.selectors.item.pubDate).text() || date - ++totalItems)
+                date: moment($block.find(self.selectors.item.date).text() || date - ++totalItems)
 
             self.emit 'item', item
 
         @emit 'end'
 
-    Object.defineProperty this.prototype, 'nextPage', 
+    Object.defineProperty this.prototype, 'nextPage',
         get: ->
             element = this.$(@selectors.nextPage)
             href = if element.is('a') then element.attr('href')
@@ -36,6 +36,6 @@ module.exports = class PageParser extends EventEmitter
 
             if url then url.resolve @host, href else null
 
-    Object.defineProperty @prototype, 'hasNext', 
+    Object.defineProperty @prototype, 'hasNext',
         get: ->
             this.$(@selectors.nextPage).length
