@@ -14,7 +14,14 @@ PageLoader = require './page-loader'
 PageParser = require './page-parser'
 
 module.exports = class FeedGenerator extends EventEmitter
+    ###
+    @param [String] feedId the unique identifier of the feed to generate
+    @param [Object] config
+    @param [String] xmlFile path to an XML file representing a cached version of the feed
+    ###
     constructor: (@feedId, @config, xmlFile) ->
+        self = this
+
         @feed = new Feed
             title: config.title
             description: config.description
@@ -38,12 +45,22 @@ module.exports = class FeedGenerator extends EventEmitter
             @cachedFeed.$ = cheerio.load xml, xmlMode: yes
             @cachedFeed.lastArticleUrl = @cachedFeed.$('item').first().find('link').text()
 
+            # Add previously cached items to the feed
+            @cachedFeed.$('item').each ->
+                self.feed.item(this)
+
             console.log "Last cached article is #{@cachedFeed.lastArticleUrl}"
         else console.log "Cached file does not exist, was expected at #{@cachedFeed.path}"
 
-
+    ###
+    @property [Number] The maximum number of pages to load, each page instantiates a new PageLoader
+    ###
     maxPages: Infinity
 
+
+    ###
+    Generate the feed as XML, emits an `end` event on finish with the XML data
+    ###
     generate: ->
         pageUrl        = @config.url
         loaded         = 0
