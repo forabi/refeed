@@ -7,5 +7,8 @@ module.exports = {
         root: process.env.OPENSHIFT_DATA_DIR || '.',
         feeds: 'feeds'
     },
+    database: {
+        connection: ""
+    },
    	max_pages_per_feed: Infinity
 }
