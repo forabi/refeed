@@ -3,16 +3,17 @@ Feed       = require 'rss'
 PageParser = require './page-parser'
 
 module.exports = class CachedFeed extends Feed
+    lastArticleUrl: null
     constructor: (xml, config) ->
 
         config = _.extend config, require('../json/rss.json')
         config.xmlMode = yes
+        config.decodeEntities = yes
 
-        console.log "CachedFeed config:", config
 
         parser = new PageParser xml, config
         parser.on 'item', (item) =>
-            if not @lastArticleUrl then @lastArticleUrl = item.url
+            unless @lastArticleUrl then @lastArticleUrl = item.url
             @item item
 
         super config

@@ -9,7 +9,7 @@
             "title": "h1",
             "author": "h2",
             "description": ".content_text",
-            "link": "h1 a"
+            "url": "h1 a"
         },
         "nextPage": ".next_float"
     }

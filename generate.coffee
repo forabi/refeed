@@ -1,4 +1,4 @@
-HOUR = 3600000
+logger = require './logger'
 
 config        = require './config.js'
 defaults      = require './defaults.json'
@@ -20,14 +20,18 @@ updateFeed = (feedId) ->
 
     generator = new FeedGenerator feedId, feedConfig, xmlFile
     generator.maxPages = config.max_pages_per_feed
+
+    generator.on 'error', (err) ->
+        logger.info 'Generator error', err
+
     generator.on 'end', (xml) ->
         fs.writeFileSync xmlFile, xml
-        console.log "Feed hindawi written to #{xmlFile}"
+        logger.info "Feed hindawi written to #{xmlFile}"
 
     generator.generate()
 
 setInterval ->
     updateFeed 'hindawi'
-, 2 * HOUR
+, config.default_interval
 
 updateFeed 'hindawi'

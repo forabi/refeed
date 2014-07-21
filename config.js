@@ -1,3 +1,4 @@
+HOUR = 3600000
 var path = require('path');
 
 module.exports = {
@@ -10,5 +11,6 @@ module.exports = {
     database: {
         connection: ""
     },
-   	max_pages_per_feed: Infinity
+   	max_pages_per_feed: Infinity,
+    default_interval: HOUR
 }

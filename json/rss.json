@@ -5,7 +5,8 @@
             "title": "title",
             "author": "author",
             "description": "description",
-            "link": "link"
+            "url": "link",
+            "date": "pubDate"
         }
     }
 }

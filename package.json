@@ -34,7 +34,8 @@
     "moment": "^2.7.0",
     "mongodb": "^1.4.7",
     "request": "^2.37.0",
-    "rss": "^0.3.2"
+    "rss": "^0.3.2",
+    "winston": "^0.7.3"
   },
   "devDependencies": {
     "codo": "^2.0.9"

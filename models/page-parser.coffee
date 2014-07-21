@@ -1,40 +1,69 @@
+logger = require process.cwd() + '/logger'
+
 EventEmitter = require('events').EventEmitter
+async        = require 'async'
+_            = require 'lodash'
 url          = require 'url'
 cheerio      = require 'cheerio'
-moment       = require 'moment'
+
+BlockParser  = require './block-parser'
+PageLoader   = require './page-loader'
 
 module.exports = class PageParser extends EventEmitter
     constructor: (@html, @config) ->
         super()
-        this.$ = cheerio.load @html, xmlMode: yes
-        this.selectors = @config.selectors
-        try moment.lang @config.language
+        @$ = cheerio.load @html, _.pick @config, 'xmlMode', 'decodeEntities'
+        @selectors = @config.selectors
 
     start: ->
-        date = new Date
-        totalItems = 0
         self = this
-        $ = this.$
-        console.log self.config.host, 'HOST'
+        $ = self.$
+        config = self.config
+
+        startDate = new Date
+        items = []
+
         $(@selectors.item.block).each ->
-            $block = $(this)
-            item =
-                title: try $block.find(self.selectors.item.title).text()
-                author: $block.find(self.selectors.item.author).text()
-                description: $block.find(self.selectors.item.description).html()
-                url: (->
-                    el = $block.find(self.selectors.item.link)
-                    relative = el.attr('href') || el.text()
-                    try
-                        url.resolve(self.config.host, relative)
-                    catch
-                        relative
-                )()
-                date: moment($block.find(self.selectors.item.date).text() || date - ++totalItems)
+            try
+                $block = $(this)
+                item = new Object
+                config.fallbackDate = startDate - items.length
 
-            self.emit 'item', item
+                for property in ['title', 'author', 'description', 'url', 'date']
+                    item[property] = BlockParser.parse property, $block, config
 
-        @emit 'end'
+                items.push item
+                self.emit 'item', item unless config.full_page
+
+            catch err
+                logger.info 'PageParser error', err
+                self.emit 'error', err
+
+        if config.full_page
+            logger.warn 'Feed set up to load full articles, this may take a while!'
+
+            getFullPage = (item, done) ->
+                loader = new PageLoader item.url
+
+                loader.on 'pageLoaded', (html) ->
+                    logger.info 'Article page loaded', item.url
+                    $article = cheerio.load html
+                    logger.info 'Article length:', html.length
+                    item.description = $article(config.full_page).html()
+                    done null, item
+
+                loader.on 'error', (err) ->
+                    done err
+
+                logger.info 'Loading article page', item.url
+                loader.load config
+
+            async.mapLimit items, 3, getFullPage, (err, items) =>
+                return @emit 'error', err if err
+                @emit 'item', item for item in items
+                @emit 'end'
+
+        else @emit 'end'
 
     Object.defineProperty this.prototype, 'nextPage',
         get: ->
