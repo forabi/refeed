@@ -36,6 +36,7 @@ startFeed = (feedId) ->
             logger.info "Feed #{feedId} written to #{xmlFile}"
 
             setTimeout ->
+                logger.info "Updating #{feedId}..."
                 updateFeed(feedId)
             , config.default_interval
 
