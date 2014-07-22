@@ -11,6 +11,6 @@
             "description": ".content_text",
             "url": "h1 a"
         },
-        "nextPage": ".next_float"
+        "nextPage": ".next_float a"
     }
 }

@@ -1,9 +1,14 @@
 EventEmitter = require('events').EventEmitter
 url          = require 'url'
 # _            = require 'lodash'
-moment       = require 'moment'
+chrono       = require 'chrono-node'
+cheerio      = require 'cheerio'
 
 module.exports = class BlockParser
+    ###
+    Class methods use `@method =` synatx, this
+    is equivalent to `this.prototype.method =`
+    ###
     @parse = (type, $block, config) ->
         selectors = config.selectors
         $el = $block.find selectors.item[type]
@@ -11,7 +16,24 @@ module.exports = class BlockParser
             when 'title' or 'author'
                 $el.text()
             when 'description'
-                if config.xmlMode then $el.text() else $el.html()
+                str = ''
+                mode = if config.xmlMode then 'text' else 'html'
+                $el.each ->
+                    str += cheerio.load(this)[mode]()
+                if mode is 'html'
+                    # Resolve relative links
+                    try
+                        $$ = cheerio.load str
+                        $$('a').each ->
+                                $this = $$ this
+                                href = $this.attr 'href'
+                                href = url.resolve config.host, href
+                                $this.attr 'href', href
+
+                        str = $$.html()
+                    catch e
+                        console.log 'Error resolving urls in description', e
+                str
             when 'url'
                 relative = $el.attr('href') || $el.text()
                 try
@@ -19,4 +41,8 @@ module.exports = class BlockParser
                 catch
                     relative
             when 'date'
-                moment($el.text() || config.fallbackDate).lang(config.language)
+                try
+                    chrono.parseDate $el.text()
+                catch e
+                    console.log 'Error parsing date', e
+                    config.fallbackDate

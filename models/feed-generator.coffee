@@ -101,6 +101,7 @@ module.exports = class FeedGenerator extends EventEmitter
 
             loader = new PageLoader pageUrl
             loader.on 'pageLoaded', (html) =>
+                # logger.info 'PageLoader finished', html
                 parser = new PageParser html, @config
 
                 parser.on 'error', (err) ->

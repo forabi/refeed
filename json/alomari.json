@@ -1,0 +1,17 @@
+{
+    "title": "Dr.Ahmed Khayri al-'Umari د.احمد خيري العمري",
+    "host": "https://m.facebook.com/",
+    "url": "https://m.facebook.com/Ahmed.Khairi.Alomari",
+    "language": "ar",
+    "selectors": {
+        "item": {
+            "block": ".feed [data-sigil='tlUnit']:not(:nth-child(1))",
+            "title": null,
+            "author": ".tlName, .tlActor",
+            "description": ".tlAboveUnit, .tlUnitContent",
+            "url": ".tlBelowUnit a[aria-label='Likes']",
+            "date": ".tlHeaderMetadata abbr"
+        },
+        "nextPage": ".feed div.aps:nth-child(2) a"
+    }
+}

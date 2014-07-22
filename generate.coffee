@@ -12,26 +12,37 @@ FeedGenerator = require './models/feed-generator'
 
 mkdirp.sync feedsDir = path.join config.dirs.root, config.dirs.feeds
 
-updateFeed = (feedId) ->
+feeds =
+    fs.readdirSync('./json')
+    .filter (i) -> i isnt 'rss.json'
+    .map (i) -> i.substr 0, i.lastIndexOf '.'
 
-    xmlFile = path.join feedsDir, "#{feedId}.xml"
+logger.info 'Feed list', feeds
 
-    feedConfig = _.defaults require("./json/#{feedId}.json"), defaults
+startFeed = (feedId) ->
+    updateFeed = ->
+        xmlFile = path.join feedsDir, "#{feedId}.xml"
 
-    generator = new FeedGenerator feedId, feedConfig, xmlFile
-    generator.maxPages = config.max_pages_per_feed
+        feedConfig = _.defaults require("./json/#{feedId}.json"), defaults
 
-    generator.on 'error', (err) ->
-        logger.info 'Generator error', err
+        generator = new FeedGenerator feedId, feedConfig, xmlFile
+        generator.maxPages = config.max_pages_per_feed
 
-    generator.on 'end', (xml) ->
-        fs.writeFileSync xmlFile, xml
-        logger.info "Feed hindawi written to #{xmlFile}"
+        generator.on 'error', (err) ->
+            logger.info 'FeedGenerator error', err
 
-    generator.generate()
+        generator.on 'end', (xml) ->
+            fs.writeFileSync xmlFile, xml
+            logger.info "Feed #{feedId} written to #{xmlFile}"
 
-setInterval ->
-    updateFeed 'hindawi'
-, config.default_interval
+            setTimeout (->
+                updateFeed(feedId)
+            ), config.default_interval
 
-updateFeed 'hindawi'
+            logger.info "Feed scheduled to update in #{config.default_interval}"
+
+        generator.generate()
+
+    updateFeed()
+
+startFeed feedId for feedId in feeds
