@@ -27,6 +27,7 @@
   "dependencies": {
     "async": "^0.9.0",
     "cheerio": "^0.17.0",
+    "chrono-node": "^0.1.10",
     "coffee-script": "^1.7.1",
     "express": "^4.6.1",
     "lodash": "^2.4.1",
