@@ -16,13 +16,20 @@ module.exports = class BlockParser
             when 'title' or 'author'
                 $el.text()
             when 'description'
-                str = ''
                 mode = if config.xmlMode then 'text' else 'html'
-                $el.each ->
-                    str += cheerio.load(this)[mode]()
-                if mode is 'html'
-                    # Resolve relative links
-                    try
+                try
+                    str = ''
+
+                    if $el.length is 1
+                        str = $el[mode]()
+                    else
+                        $el.each ->
+                            str += cheerio.load(this)[mode]()
+
+                    # console.log 'str:', str
+
+                    if mode is 'html'
+                        # Resolve relative links
                         $$ = cheerio.load str
                         $$('a').each ->
                                 $this = $$ this
@@ -31,9 +38,11 @@ module.exports = class BlockParser
                                 $this.attr 'href', href
 
                         str = $$.html()
-                    catch e
-                        console.log 'Error resolving urls in description', e
-                str
+
+                    str
+                catch e
+                    console.log 'Error in parsing article description', e
+                    $el[mode]()
             when 'url'
                 relative = $el.attr('href') || $el.text()
                 try
