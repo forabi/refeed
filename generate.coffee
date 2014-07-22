@@ -35,9 +35,9 @@ startFeed = (feedId) ->
             fs.writeFileSync xmlFile, xml
             logger.info "Feed #{feedId} written to #{xmlFile}"
 
-            setTimeout (->
+            setTimeout ->
                 updateFeed(feedId)
-            ), config.default_interval
+            , config.default_interval
 
             logger.info "Feed scheduled to update in #{config.default_interval}"
 
