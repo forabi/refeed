@@ -5,13 +5,13 @@
     "language": "ar",
     "selectors": {
         "item": {
-            "block": ".feed [data-sigil='tlUnit']:not(:nth-child(1))",
+            "block": "#recent [data-sigil='tlUnit']:not(:nth-child(1)) > div",
             "title": null,
-            "author": ".tlName, .tlActor",
-            "description": ".tlAboveUnit, .tlUnitContent",
-            "url": ".tlBelowUnit a[aria-label='Likes']",
-            "date": ".tlHeaderMetadata abbr"
+            "author": "div:first-child > span",
+            "description": "div:not(:first-child):not(:last-child)",
+            "url": "a[aria-label='Likes']",
+            "date": "div:first-child abbr"
         },
-        "nextPage": ".feed div.aps:nth-child(2) a"
+        "nextPage": "#timelineBody #u_0_1 > div:nth-child(2) a"
     }
 }
