@@ -22,8 +22,11 @@ logger.info 'Feed list', feeds
 startFeed = (feedId) ->
     updateFeed = ->
         xmlFile = path.join feedsDir, "#{feedId}.xml"
+        # logger.info 'Got cached file', fs.readFileSync(xmlFile).length
 
         feedConfig = _.defaults require("./json/#{feedId}.json"), defaults
+
+        logger.info 'feedConfig', feedConfig
 
         generator = new FeedGenerator feedId, feedConfig, xmlFile
         generator.maxPages = config.max_pages_per_feed
@@ -32,6 +35,7 @@ startFeed = (feedId) ->
             logger.info 'FeedGenerator error', err
 
         generator.on 'end', (xml) ->
+            # logger.info 'New xml', xml.length
             fs.writeFileSync xmlFile, xml
             logger.info "Feed #{feedId} written to #{xmlFile}"
 

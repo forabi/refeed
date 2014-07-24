@@ -23,9 +23,13 @@ module.exports = class PageParser extends EventEmitter
         startDate = new Date
         items = []
 
+        logger.info 'Block selector is', @selectors.item.block
+
+        logger.info "Found #{$(@selectors.item.block).length} items in page"
+
         $(@selectors.item.block).each ->
             try
-                $block = $(this)
+                $block = $ this
                 item = new Object
                 config.fallbackDate = startDate - items.length
 
@@ -33,6 +37,7 @@ module.exports = class PageParser extends EventEmitter
                     item[property] = BlockParser.parse property, $block, config
 
                 items.push item
+                logger.info 'Emitting item', item.url
                 self.emit 'item', item unless config.full_page
 
             catch err
