@@ -20,7 +20,6 @@ log 'info', "Feed list contains #{feeds.length} items"
 startFeed = (feedId) ->
     updateFeed = ->
         xmlFile = path.join feedsDir, "#{feedId}.xml"
-        log 'debug', 'Got cached file', fs.readFileSync(xmlFile).length
 
         feedConfig = require "./json/#{feedId}.json"
 
