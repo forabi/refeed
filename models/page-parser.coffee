@@ -51,7 +51,9 @@ module.exports = class PageParser extends EventEmitter
                 item = new Object
                 config.fallbackDate = startDate - items.length
 
-                for property in ['title', 'author', 'description', 'url', 'date']
+                for property in [
+                    'title', 'author', 'description', 'url', 'date'
+                ]
                     item[property] = BlockParser.parse property, $block, config
 
                 items.push item
@@ -63,7 +65,8 @@ module.exports = class PageParser extends EventEmitter
                 self.emit 'error', err
 
         if config.full_page
-            logger.warn 'Feed set up to load full articles, this may take a while!'
+            logger.warn 'Feed set up to load full articles,
+            this may take a while!'
 
             getFullPage = (item, done) ->
                 loader = new PageLoader item.url
@@ -88,11 +91,13 @@ module.exports = class PageParser extends EventEmitter
 
         else @emit 'end'
 
-    Object.defineProperty this.prototype, 'nextPage',
+    Object.defineProperty this.prototype, 'nextPage', {
         get: ->
             href = this.$(@selectors.nextPage).attr('href') || ''
             if url then url.resolve @config.host, href else null
+    }
 
-    Object.defineProperty @prototype, 'hasNext',
+    Object.defineProperty @prototype, 'hasNext', {
         get: ->
             this.$(@selectors.nextPage).length
+    }

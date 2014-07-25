@@ -47,15 +47,17 @@ module.exports = class FeedGenerator extends EventEmitter
     ###
     @param {String} feedId the unique identifier of the feed to generate
     @param {Object} config Feed configuration object
-    @param {String} cachedXMLPath Path to an XML file representing a cached version of the feed
+    @param {String} cachedXMLPath Path to an XML file representing a cached
+    version of the feed
     ###
     constructor: (@feedId, @config, cachedXMLPath) ->
         self = this
-        feedConfig = _.extend @config, site_url: config.url
+        feedConfig = _.extend @config, { site_url: config.url }
 
         if 'string' is typeof @config.inherits
-            logger.info "Feed #{feedId} inherits the #{config.inherits} prototype"
-            config = _.defaults config, require "../prototypes/#{config.inherits}"
+            logger.info "Feed #{feedId} inherits prototype #{config.inherits}"
+            config =
+                _.defaults config, require "../prototypes/#{config.inherits}"
 
         config = _.defaults config, defaults
 
@@ -71,7 +73,8 @@ module.exports = class FeedGenerator extends EventEmitter
             was expected at #{cachedXMLPath}", e
 
     ###
-    @property [Number] The maximum number of pages to load, each page instantiates a new `PageLoader`
+    @property [Number] The maximum number of pages to load,
+    each page instantiates a new `PageLoader`
     ###
     maxPages: Infinity
 
@@ -94,7 +97,8 @@ module.exports = class FeedGenerator extends EventEmitter
 
         noMoreArticles = =>
             (typeof pageUrl isnt 'string') or
-            (loaded >= @maxPages and (@forceLimit or @feed.lastArticleUrl is null)) or
+            (loaded >= @maxPages and
+                (@forceLimit or @feed.lastArticleUrl is null)) or
             (_.contains articles, @feed.lastArticleUrl) or
             (!!parser and not parser.hasNext)
 
@@ -109,7 +113,7 @@ module.exports = class FeedGenerator extends EventEmitter
 
             loader = new PageLoader pageUrl
             loader.on 'pageLoaded', (html) =>
-                logger.info "PageLoader finished loading, #{pageUrl}", html.length
+                logger.info 'PageLoader finished', pageUrl, html.length
                 parser = new PageParser html, @config
 
                 parser.on 'error', (err) ->
@@ -126,7 +130,7 @@ module.exports = class FeedGenerator extends EventEmitter
                     logger.info 'Got item', _.omit item, 'description'
                     articles.push item.url
 
-                parser.on 'end', =>
+                parser.on 'end', ->
                     # logger.info @feed
                     loaded += 1
                     if parser.hasNext

@@ -11,7 +11,7 @@ module.exports = class BlockParser
     ###
     @parse = (type, $block, config) ->
         selectors = config.selectors
-        $el = $block.find selectors.item[type]
+        $el = $block.removeClass().find selectors.item[type]
         switch type
             when 'title' or 'author'
                 $el.text()
@@ -32,10 +32,10 @@ module.exports = class BlockParser
                         # Resolve relative links
                         $$ = cheerio.load str
                         $$('a').each ->
-                                $this = $$ this
-                                href = $this.attr 'href'
-                                href = url.resolve config.host, href
-                                $this.attr 'href', href
+                            $this = $$ this
+                            href = $this.attr 'href'
+                            href = url.resolve config.host, href
+                            $this.attr 'href', href
 
                         str = $$.html()
 

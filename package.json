@@ -39,6 +39,10 @@
     "winston": "^0.7.3"
   },
   "devDependencies": {
-    "codo": "^2.0.9"
+    "codo": "^2.0.9",
+    "coffeelint": "^1.5.2"
+  },
+  "engines": {
+    "node": ">=0.10.3"
   }
 }
