@@ -1,4 +1,4 @@
-logger = require './logger'
+log = require './logger'
 
 config        = require './config.js'
 
@@ -12,38 +12,36 @@ FeedGenerator = require './models/feed-generator'
 mkdirp.sync feedsDir = path.join config.dirs.root, config.dirs.feeds
 
 feeds =
-    fs.readdirSync('./json')
-    .filter (i) -> i isnt 'rss.json'
+    fs.readdirSync './json'
     .map (i) -> i.substr 0, i.lastIndexOf '.'
 
-logger.info 'Feed list', feeds
+log 'info', "Feed list contains #{feeds.length} items"
 
 startFeed = (feedId) ->
     updateFeed = ->
         xmlFile = path.join feedsDir, "#{feedId}.xml"
-        # logger.info 'Got cached file', fs.readFileSync(xmlFile).length
+        log 'debug', 'Got cached file', fs.readFileSync(xmlFile).length
 
         feedConfig = require "./json/#{feedId}.json"
 
-        logger.info 'feedConfig', feedConfig
+        log 'debug', 'Feed configuration:', feedConfig
 
         generator = new FeedGenerator feedId, feedConfig, xmlFile
         generator.maxPages = config.max_pages_per_feed
 
         generator.on 'error', (err) ->
-            logger.info 'FeedGenerator error', err
+            log 'error', 'FeedGenerator error', err
 
         generator.on 'end', (xml) ->
-            # logger.info 'New xml', xml.length
             fs.writeFileSync xmlFile, xml
-            logger.info "Feed #{feedId} written to #{xmlFile}"
+            log 'info', "Feed #{feedId} written to #{xmlFile}"
 
             setTimeout ->
-                logger.info "Updating #{feedId}..."
+                log info "Updating #{feedId}..."
                 updateFeed(feedId)
             , config.default_interval
 
-            logger.info "Feed scheduled to update in #{config.default_interval}"
+            log 'info', "Feed scheduled to update in #{config.default_interval}"
 
         generator.generate()
 

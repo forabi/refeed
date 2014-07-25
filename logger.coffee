@@ -1,20 +1,25 @@
 winston = require('winston')
 Logger  = winston.Logger
 
-# levels =
-#     levels:
-#         info: 0
-#         error: 1
-#         warn: 2
-#         debug: 3
-#     colors:
-#         info: 'blue'
-#         error: 'red'
-#         warn: 'yellow'
-#         debug: 'black'
+logger = new Logger
+    levels:
+        debug: 0
+        verbose: 1
+        info: 2
+        warn: 3
+        error: 4
+    colors: colors =
+        debug: 'black'
+        verbose: 'gray'
+        info: 'blue'
+        warn: 'yellow'
+        error: 'red'
 
-logger  = winston
 
-# winston.addColors levels.colors
+    transports: [
+        new winston.transports.Console level: 'info'
+    ]
 
-module.exports = logger
+winston.addColors colors
+
+module.exports = logger.log.bind logger
