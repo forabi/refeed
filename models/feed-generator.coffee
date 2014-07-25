@@ -16,6 +16,8 @@ request    = require 'request'
 PageLoader = require './page-loader'
 PageParser = require './page-parser'
 
+defaults   = require '../defaults.json'
+
 ###
 This model takes care of all the tasks required to generate the raw XML data
 that are then written to a file. Note that it does not directly write the file,
@@ -50,6 +52,12 @@ module.exports = class FeedGenerator extends EventEmitter
     constructor: (@feedId, @config, cachedXMLPath) ->
         self = this
         feedConfig = _.extend @config, site_url: config.url
+
+        if 'string' is typeof @config.inherits
+            logger.info "Feed #{feedId} inherits the #{config.inherits} prototype"
+            config = _.defaults config, require "../prototypes/#{config.inherits}"
+
+        config = _.defaults config, defaults
 
         try
             xml = fs.readFileSync(cachedXMLPath).toString()
@@ -107,12 +115,19 @@ module.exports = class FeedGenerator extends EventEmitter
                 parser.on 'error', (err) ->
                     done err
 
+                parser.on 'metadata', (object) =>
+                    logger.info 'Got metadata:', object
+                    for key, value of object
+                        @feed[key] = value
+                        # logger.info @feed[key], value
+
                 parser.on 'item', (item) =>
                     @feed.item item
                     logger.info 'Got item', _.omit item, 'description'
                     articles.push item.url
 
                 parser.on 'end', =>
+                    # logger.info @feed
                     loaded += 1
                     if parser.hasNext
                         pageUrl = parser.nextPage

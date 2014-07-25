@@ -11,6 +11,6 @@ module.exports = {
     database: {
         connection: ""
     },
-   	max_pages_per_feed: 10,
+   	max_pages_per_feed: 1,
     default_interval: HOUR
 }

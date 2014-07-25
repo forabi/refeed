@@ -1,0 +1,14 @@
+{
+    "selectors": {
+        "title": "title",
+        "description": "description",
+        "item": {
+            "block": "item",
+            "title": "title",
+            "author": "author",
+            "description": "description",
+            "url": "link",
+            "date": "pubDate"
+        }
+    }
+}

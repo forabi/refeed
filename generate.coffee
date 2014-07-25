@@ -1,7 +1,6 @@
 logger = require './logger'
 
 config        = require './config.js'
-defaults      = require './defaults.json'
 
 fs            = require 'fs'
 _             = require 'lodash'
@@ -24,7 +23,7 @@ startFeed = (feedId) ->
         xmlFile = path.join feedsDir, "#{feedId}.xml"
         # logger.info 'Got cached file', fs.readFileSync(xmlFile).length
 
-        feedConfig = _.defaults require("./json/#{feedId}.json"), defaults
+        feedConfig = require "./json/#{feedId}.json"
 
         logger.info 'feedConfig', feedConfig
 

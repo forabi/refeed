@@ -1,5 +1,7 @@
 {
     "selectors": {
+        "title": "title",
+        "description": "description",
         "item": {
             "block": "item",
             "title": "title",

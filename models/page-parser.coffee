@@ -23,11 +23,29 @@ module.exports = class PageParser extends EventEmitter
         startDate = new Date
         items = []
 
-        logger.info 'Block selector is', @selectors.item.block
+        # logger.info "Modes for feed", config.modes
 
+        # Refer to https://github.com/dylang/node-rss#feedoptions for fields
+        for metadata in [
+            'title', 'author', 'description', 'url', 'language',
+            'categories', 'copyright', 'image_url', 'managingEditor',
+            'docs', 'webMaster'
+        ]
+            matches = $ ":not(#{@selectors.item.block}) #{@selectors[metadata]}"
+            if matches.length > 0
+                object = new Object
+                # metadataMode = config.modes[metadata]
+                # logger.info "Metadata mode for #{metadata} is #{metadataMode}"
+                # object[metadata] = matches[metadataMode]()
+                object[metadata] = matches.text()
+                logger.info 'Emitting metadata', object
+                self.emit 'metadata', object
+
+
+        logger.info 'Block selector is', @selectors.item.block
         logger.info "Found #{$(@selectors.item.block).length} items in page"
 
-        $(@selectors.item.block).each ->
+        ($ @selectors.item.block).each ->
             try
                 $block = $ this
                 item = new Object

@@ -6,7 +6,7 @@ module.exports = class CachedFeed extends Feed
     lastArticleUrl: null
     constructor: (xml, config) ->
 
-        config = _.defaults require('../json/rss.json'), config
+        config = _.defaults require('../prototypes/rss.json'), config
         config.xmlMode = yes
         config.decodeEntities = yes
 

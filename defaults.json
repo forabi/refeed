@@ -7,5 +7,9 @@
         "Cache-Control": "max-age=0"
     },
     "gzip": true,
-    "locale": "en-US"
+    "locale": "en-US",
+    "modes": {
+        "title": "text",
+        "description": "text"
+    }
 }
