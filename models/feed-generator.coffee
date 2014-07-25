@@ -52,7 +52,9 @@ module.exports = class FeedGenerator extends EventEmitter
     ###
     constructor: (@feedId, @config, cachedXMLPath) ->
         self = this
-        feedConfig = _.extend @config, { site_url: config.url }
+
+        @config.site_url = config.url
+        feedConfig = @config
 
         if 'string' is typeof @config.inherits
             log 'debug', "Feed #{feedId} inherits prototype #{config.inherits}"
