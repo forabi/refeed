@@ -1,4 +1,4 @@
-log = require("#{process.cwd()}/logger")
+log = require  "#{process.cwd()}/logger"
 
 EventEmitter = require('events').EventEmitter
 async        = require 'async'
@@ -12,6 +12,8 @@ PageLoader   = require './page-loader'
 module.exports = class PageParser extends EventEmitter
     constructor: (@html, @config) ->
         super()
+        log 'verbose', "PageParser initialized for feed #{@config.title}",
+            @config
         @$ = cheerio.load @html, _.pick config, 'xmlMode', 'decodeEntities'
         @selectors = config.selectors
 
@@ -19,6 +21,7 @@ module.exports = class PageParser extends EventEmitter
         self = this
         $ = @$
         config = @config
+        blockParser = new BlockParser @config
 
         startDate = new Date
         items = []
@@ -38,7 +41,6 @@ module.exports = class PageParser extends EventEmitter
                 # log 'info', "Metadata mode for #{metadata} is #{metadataMode}"
                 # object[metadata] = matches[metadataMode]()
                 object[metadata] = matches.text()
-                # log 'info', 'Emitting metadata', object
                 self.emit 'metadata', object
 
 
@@ -54,14 +56,14 @@ module.exports = class PageParser extends EventEmitter
                 for property in [
                     'title', 'author', 'description', 'url', 'date'
                 ]
-                    item[property] = BlockParser.parse property, $block, config
+                    item[property] = blockParser.parse property, $block
 
                 items.push item
-                log 'debug', 'Emitting item', item.url
+                log 'verbose', 'Emitting item', item.url
                 self.emit 'item', item unless config.full_page
 
             catch err
-                log 'error', 'PageParser error', err
+                log 'error', 'PageParser error', err.message
                 self.emit 'error', err
 
         if config.full_page
@@ -91,13 +93,13 @@ module.exports = class PageParser extends EventEmitter
 
         else @emit 'end'
 
-    Object.defineProperty this.prototype, 'nextPage', {
+    Object.defineProperty @prototype, 'nextPage', {
         get: ->
-            href = this.$(@selectors.nextPage).attr('href') || ''
+            href = @$(@selectors.nextPage).attr('href') || ''
             if url then url.resolve @config.host, href else null
     }
 
     Object.defineProperty @prototype, 'hasNext', {
         get: ->
-            this.$(@selectors.nextPage).length
+            @$(@selectors.nextPage).length
     }

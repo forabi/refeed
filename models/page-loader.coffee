@@ -1,3 +1,5 @@
+log = require  "#{process.cwd()}/logger"
+
 EventEmitter = require('events').EventEmitter
 request      = require 'request'
 

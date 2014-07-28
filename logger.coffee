@@ -2,14 +2,14 @@ winston = require 'winston'
 
 logger = new winston.Logger
     levels:
-        debug: 0
-        verbose: 1
+        verbose: 0
+        debug: 1
         info: 2
         warn: 3
         error: 4
     colors: colors =
-        debug: 'black'
         verbose: 'gray'
+        debug: 'black'
         info: 'blue'
         warn: 'yellow'
         error: 'red'
@@ -18,5 +18,7 @@ logger = new winston.Logger
     transports: [
         new winston.transports.Console level: 'info'
     ]
+
+winston.addColors colors
 
 module.exports = logger.log.bind logger

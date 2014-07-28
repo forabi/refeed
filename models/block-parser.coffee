@@ -1,18 +1,51 @@
+log = require "#{process.cwd()}/logger"
+
 EventEmitter = require('events').EventEmitter
 url          = require 'url'
 # _            = require 'lodash'
 chrono       = require 'chrono-node'
 cheerio      = require 'cheerio'
 
+###
+A block parser is responsible for parsing a single field of article fields,
+for example a title or description field.
+
+@example
+    blockParser = new BlockParser({
+        xmlMode: false,
+        selectors: {
+            title: ...,
+            item: {
+                block: ...
+            }
+        }
+    })
+
+    item.title = blockParser.parse('title', $block)
+
+###
 module.exports = class BlockParser
     ###
-    Class methods use `@method =` synatx, this
-    is equivalent to `this.prototype.method =`
+    @param {Object} config A configuration object
+    @option config {Object} selectors see {FeedGenerator.constructor} for details
+    @option config {Boolean} xmlMode
     ###
-    @parse = (type, $block, config) ->
+    constructor: (config) ->
+        @config = config
+
+    ###
+    @param {String} field name of field to parse
+    @param {Object} $block A cheerio object to parse
+    @return {String} HTML/Text for field
+    @example
+        item.title = blockParser.parse('title', $block)
+        // Where $block is a cheerio object
+    ###
+    parse: (field, $block) ->
+        config = @config
         selectors = config.selectors
-        $el = $block.removeClass().find selectors.item[type]
-        switch type
+        $el = $block.removeClass().find selectors.item[field]
+        switch field
             when 'title' or 'author'
                 $el.text()
             when 'description'
@@ -53,5 +86,5 @@ module.exports = class BlockParser
                 try
                     chrono.parseDate $el.text()
                 catch e
-                    console.log 'Error parsing date', e
+                    log 'warn', 'Error parsing date', e
                     config.fallbackDate

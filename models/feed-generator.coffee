@@ -31,12 +31,17 @@ instead it emits an 'end' event with the XML string.
         selectors: {
             ...
         }
-    }, './feeds/hindawi.xml')
+    }, './feeds/hindawi.xml');
 
-    generator.on 'end', (xml) ->
-        fs.writeFile(xml, done)
+    generator.on('end', function(xml) {
+        fs.writeFile(xml, done);
+    })
 
-    generator.generate()
+    generator.on('initialized', function() {
+        generator.generate();
+    })
+
+    generator.initialize();
 
 
 @event end - This event is emitted when the whole XML data is ready
@@ -47,43 +52,45 @@ module.exports = class FeedGenerator extends EventEmitter
     ###
     @param {String} feedId the unique identifier of the feed to generate
     @param {Object} config Feed configuration object
-    @param {String} cachedXMLPath Path to an XML file representing a cached
-    version of the feed
+    @param {String} cachedXMLPath Path to an XML file representing a cached version of the feed
     ###
-    constructor: (@feedId, @config, cachedXMLPath) ->
-        self = this
-
-        @config.site_url = config.url
-        feedConfig = @config
-
-        if 'string' is typeof @config.inherits
+    constructor: (@feedId, config, @cachedXMLPath) ->
+        if 'string' is typeof config.inherits
             log 'debug', "Feed #{feedId} inherits prototype #{config.inherits}"
             config =
                 _.defaults config, require "../prototypes/#{config.inherits}"
 
-        config = _.defaults config, defaults
+        config.site_url = config.url
 
+        @config = _.defaults config, defaults
+
+        @feedConfig = @config
+
+    initialize: ->
         try
-            xml = fs.readFileSync(cachedXMLPath).toString()
-            @feed = new CachedFeed xml, feedConfig
-            log 'info', "Reusing cached feed file #{cachedXMLPath}"
-            log 'debug', "Cached feed XML length is #{xml.length}"
-            log 'info', "Last cached article is #{@feed.lastArticleUrl}"
+            xml = fs.readFileSync(@cachedXMLPath).toString()
+            @feed = new CachedFeed xml, @feedConfig
+            @feed.parser.on 'end', =>
+                @emit 'initialized'
+                log 'info', "Reusing cached feed file #{@cachedXMLPath}"
+                log 'debug', "Cached feed XML length is #{xml.length}"
+                log 'info', "Last cached article is #{@feed.lastArticleUrl}"
+
+            @feed.load()
+
         catch e
-            @feed = new Feed feedConfig
+            @feed = new Feed @feedConfig
+            @emit 'initialized'
             log 'warn', "Something went wrong while loading the cached feed,
-            was expected at #{cachedXMLPath}, rebuilding feed...", e
+            was expected at #{@cachedXMLPath}, rebuilding feed...", e.toString()
 
     ###
-    @property [Number] The maximum number of pages to load,
-    each page instantiates a new `PageLoader`
+    @property [Number] The maximum number of pages to load, each page instantiates a new `PageLoader`
     ###
     maxPages: Infinity
 
     ###
-    @property [Boolean] Whether to honor the maxPages limit even in cases
-    where there are more pages to load until lastArticleUrl is matched.
-    Setting this to `true` may cause some articles to be missing from the feed.
+    @property [Boolean] Whether to honor the maxPages limit even in cases where there are more pages to load until lastArticleUrl is matched. Setting this to `true` may cause some articles to be missing from the feed.
     ###
     forceLimit: yes
 
@@ -124,8 +131,7 @@ module.exports = class FeedGenerator extends EventEmitter
                 parser.on 'metadata', (object) =>
                     log 'debug', 'Got metadata:', object
                     for key, value of object
-                        @feed[key] = value
-                        # log info @feed[key], value
+                        @feed[key] ?= value
 
                 parser.on 'item', (item) =>
                     @feed.item item

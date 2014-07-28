@@ -4,6 +4,7 @@ config        = require './config.js'
 
 fs            = require 'fs'
 _             = require 'lodash'
+async         = require 'async'
 path          = require 'path'
 mkdirp        = require 'mkdirp'
 
@@ -18,7 +19,7 @@ feeds =
 log 'info', "Feed list contains #{feeds.length} items"
 
 startFeed = (feedId) ->
-    updateFeed = ->
+    updateFeed = (feedId) ->
         xmlFile = path.join feedsDir, "#{feedId}.xml"
 
         feedConfig = require "./json/#{feedId}.json"
@@ -37,13 +38,16 @@ startFeed = (feedId) ->
 
             setTimeout ->
                 log info "Updating #{feedId}..."
-                updateFeed(feedId)
+                updateFeed feedId
             , config.default_interval
 
             log 'info', "Feed scheduled to update in #{config.default_interval}"
 
-        generator.generate()
+        generator.on 'initialized', generator.generate.bind generator
 
-    updateFeed()
+        generator.initialize()
+
+
+    updateFeed feedId
 
 startFeed feedId for feedId in feeds
