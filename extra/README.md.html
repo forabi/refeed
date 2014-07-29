@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset='UTF-8'>
+  <title>CoffeeScript API Documentation</title>
+  <script src='../javascript/application.js'></script>
+  <script src='../javascript/search.js'></script>
+  <link rel='stylesheet' href='../stylesheets/application.css' type='text/css'>
+</head>
+  <body>
+    <div id='base' data-path='../'></div>
+<div id='header'>
+  <div id='menu'>
+    <a href='../extra/README.md.html' title='Refeed'>
+      Refeed
+    </a>
+    &raquo;
+    <a href='../alphabetical_index.html' title='Index'>
+      Index
+    </a>
+    &raquo;
+    <span class='title'>README.md</span>
+  </div>
+</div>
+    <div id='content'>
+      <nav class='toc'>
+        <p class='title'>
+          <a class='hide_toc' href='#'>
+            <strong>Table of Contents</strong>
+          </a>
+          <small>
+            (<a class='float_toc' href='#'>left</a>)
+          </small>
+        </p>
+      </nav>
+      <div id='filecontents'>
+        <h1 id="refeed">reFeed</h1><p>A service that offers RSS feeds for websites that do not natively provide them.</p><p>reFeed is composed of two main components, the <em>core</em> and the <em>client</em>.</p><h2 id="core">Core</h2><p>The core is the engine that takes care of fetching, caching and updating the RSS feeds. Each task is handled by a standalone model:</p><ul>
+<li>a <code>PageLoader</code> is responsible for requesting the webpage located at a specific <code>url</code> and returning the <code>String</code> representation of the response body.</li>
+<li>a <code>PageParser</code> is instantiated with the <code>html</code> data and other <code>config</code> data to parse the webpage and try to find a set of items that can be recognized as articles. The rules a <code>PageParser</code> uses to recognize articles are defined on a per-feed basis as a collection of CSS selectors. This may be extended in the future to handle complex page layouts that require more sophisticated ways of parsing. For an example of a feed configuration file, take a look at <a href="json/hindawi.json">json/hindawi.json</a></li>
+<li>a <code>FeedGenerator</code> takes a <code>feedId</code>, a <code>config</code> object and an optional <code>xmlFile</code> argument that represents a path to cached version of a feed (<code>feedId</code>). <code>FeedGenerator</code> makes use of the cached version so that the engine does not have to fetch the whole website every time a few articles are added. It may instantiate one or more <code>PageLoader</code>s and <code>PageParser</code>s.</li>
+</ul>
+<h3 id="life-cycle">Life cycle</h3>
+<ul>
+<li>The core looks for <code>feedId</code>s that require regenerating (using, for example, a query to a mongo database that stores the required data).</li>
+<li>Instantiate a <code>FeedGenerator</code> for each <code>feedId</code> that is returned from the query.</li>
+<li>Listen to the <code>end</code> event on <code>FeedGenerator</code> instances and write the corresponding XML files to a specific directory.</li>
+<li>Update the last check time of each feed in the database.</li>
+<li>A static file server serves the XML files.</li>
+</ul>
+<h2 id="client-not-implemented-">Client (not implemented)</h2><p>The client part of reFeed provides a usable interface that facilitates searching, creating and fetching of generated feeds.</p><h3 id="usage-scenario">Usage scenario</h3>
+<ul>
+<li><p>The home page of the client is a simple webpage with a Google-like search box. The user uses that box to find an already generated feed based on its website URL, title, description or category.</p><ol>
+<li><p>If one match is found, the user is redirected to that feed.</p></li>
+<li><p>If more than one match are found, a list of the matches is displayed with title, description and website URL for each match.</p></li>
+<li><p>If nothing is found, and the input matches a valid URL pattern, the client tries to generate/find at least one feed on that URL. The results are then displayed in a similar way to the one described in a or b.</p></li>
+</ol>
+</li>
+</ul><p>[...]</p>
+      </div>
+    </div>
+    <div id='footer'>
+  July 29, 14 06:47:22 by
+  <a href='https://github.com/coffeedoc/codo' title='CoffeeScript API documentation generator'>
+    Codo
+  </a>
+  2.0.9
+  &#10034;
+  Press H to see the keyboard shortcuts
+  &#10034;
+  <a href='http://twitter.com/netzpirat' target='_parent'>@netzpirat</a>
+  &#10034;
+  <a href='http://twitter.com/_inossidabile' target='_parent'>@_inossidabile</a>
+</div>
+<iframe id='search_frame'></iframe>
+<div id='fuzzySearch'>
+  <input type='text'>
+  <ol></ol>
+</div>
+<div id='help'>
+  <p>
+    Quickly fuzzy find classes, mixins, methods, file:
+  </p>
+  <ul>
+    <li>
+      <span>T</span>
+      Open fuzzy finder dialog
+    </li>
+  </ul>
+  <p>
+    Control the navigation frame:
+  </p>
+  <ul>
+    <li>
+      <span>L</span>
+      Toggle list view
+    </li>
+    <li>
+      <span>C</span>
+      Show class list
+    </li>
+    <li>
+      <span>I</span>
+      Show mixin list
+    </li>
+    <li>
+      <span>F</span>
+      Show file list
+    </li>
+    <li>
+      <span>M</span>
+      Show method list
+    </li>
+    <li>
+      <span>E</span>
+      Show extras list
+    </li>
+  </ul>
+  <p>
+    You can focus and blur the search input:
+  </p>
+  <ul>
+    <li>
+      <span>S</span>
+      Focus search input
+    </li>
+    <li>
+      <span>Esc</span>
+      Blur search input
+    </li>
+  </ul>
+</div>
+  </body>
+</html>
