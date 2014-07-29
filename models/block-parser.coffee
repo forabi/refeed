@@ -11,7 +11,7 @@ A block parser is responsible for parsing a single field of article fields,
 for example a title or description field.
 
 @example
-    blockParser = new BlockParser({
+    blockParser = new BlockParser {
         xmlMode: false,
         selectors: {
             title: ...,
@@ -19,9 +19,9 @@ for example a title or description field.
                 block: ...
             }
         }
-    })
+    }
 
-    item.title = blockParser.parse('title', $block)
+    item.title = blockParser.parse 'title', $block
 
 ###
 module.exports = class BlockParser
@@ -38,8 +38,8 @@ module.exports = class BlockParser
     @param {Object} $block A cheerio object to parse
     @return {String} HTML/Text for field
     @example
-        item.title = blockParser.parse('title', $block)
-        // Where $block is a cheerio object
+        item.title = blockParser.parse 'title', $block
+        # Where $block is a cheerio object
     ###
     parse: (field, $block) ->
         config = @config

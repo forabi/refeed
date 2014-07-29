@@ -13,7 +13,7 @@ feed prototype whenever an XML file for the feed exists. New items can
 be added as usual using the `Feed#item` method.
 
 @example
-    feed = new CachedFeed(fs.readFileSync('some.xml').toString(), {
+    feed = new CachedFeed fs.readFileSync('some.xml').toString(), {
         title: ...
         url: ...
         description: ...
@@ -21,15 +21,14 @@ be added as usual using the `Feed#item` method.
             title: ...,
             ...
         }
-    })
+    }
 
-    // You must listen for the end event on `parser` before adding new items
-    feed.parser.on('end', function() {
-        feed.item({
+    # You must listen for the end event on `parser` before adding new items
+    feed.parser.on 'end', ->
+        feed.item {
             title: 'New post',
             date: ...
-        })
-    })
+        }
 
     feed.load()
 ###
