@@ -9,7 +9,18 @@ cheerio      = require 'cheerio'
 BlockParser  = require './block-parser'
 PageLoader   = require './page-loader'
 
+###
+@event metadata
+@see https://github.com/dylang/node-rss#feedoptions for metadata fields
+@event item
+@event error
+@event pageparsed
+
+###
 module.exports = class PageParser extends EventEmitter
+    ###
+
+    ###
     constructor: (@html, @config) ->
         super()
         log 'verbose', "PageParser initialized for feed #{@config.title}",
@@ -17,6 +28,9 @@ module.exports = class PageParser extends EventEmitter
         @$ = cheerio.load @html, _.pick config, 'xmlMode', 'decodeEntities'
         @selectors = config.selectors
 
+    ###
+
+    ###
     start: ->
         self = this
         $ = @$
@@ -26,9 +40,6 @@ module.exports = class PageParser extends EventEmitter
         startDate = new Date
         items = []
 
-        # log 'info', "Modes for feed", config.modes
-
-        # Refer to https://github.com/dylang/node-rss#feedoptions for fields
         for metadata in [
             'title', 'author', 'description', 'url', 'language',
             'categories', 'copyright', 'image_url', 'managingEditor',
@@ -37,9 +48,6 @@ module.exports = class PageParser extends EventEmitter
             matches = $ ":not(#{@selectors.item.block}) #{@selectors[metadata]}"
             if matches.length > 0
                 object = new Object
-                # metadataMode = config.modes[metadata]
-                # log 'info', "Metadata mode for #{metadata} is #{metadataMode}"
-                # object[metadata] = matches[metadataMode]()
                 object[metadata] = matches.text()
                 self.emit 'metadata', object
 
@@ -73,11 +81,11 @@ module.exports = class PageParser extends EventEmitter
             getFullPage = (item, done) ->
                 loader = new PageLoader item.url
 
-                loader.on 'pageLoaded', (html) ->
-                    logg 'info', 'Article page loaded', item.url
-                    $article = cheerio.load html
+                loader.on 'pageloaded', (html) ->
+                    log 'info', 'Article page loaded', item.url
+                    $$ = cheerio.load html
                     log 'info', 'Article length:', html.length
-                    item.description = $article(config.full_page).html()
+                    item.description = ($$ config.full_page).html()
                     done null, item
 
                 loader.on 'error', (err) ->
@@ -89,16 +97,23 @@ module.exports = class PageParser extends EventEmitter
             async.mapLimit items, 3, getFullPage, (err, items) =>
                 return @emit 'error', err if err
                 @emit 'item', item for item in items
-                @emit 'end'
+                @emit 'pageparsed'
 
-        else @emit 'end'
+        else @emit 'pageparsed'
 
+
+    ###
+    @property {String} nextPage The URL of the next page to load, found using the `nextPage` selector
+    ###
     Object.defineProperty @prototype, 'nextPage', {
         get: ->
             href = @$(@selectors.nextPage).attr('href') || ''
             if url then url.resolve @config.host, href else null
     }
 
+    ###
+    @property {Boolean} hasNext whether a match for the `nextPage` selector is found
+    ###
     Object.defineProperty @prototype, 'hasNext', {
         get: ->
             @$(@selectors.nextPage).length

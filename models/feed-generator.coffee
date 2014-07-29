@@ -21,7 +21,7 @@ defaults   = require '../defaults.json'
 ###
 This model takes care of all the tasks required to generate the raw XML data
 that are then written to a file. Note that it does not directly write the file,
-instead it emits an 'end' event with the XML string.
+instead it emits an 'feedgenerated' event with the XML string.
 
 @example
     generator = new FeedGenerator 'hindawi', {
@@ -33,7 +33,7 @@ instead it emits an 'end' event with the XML string.
         }
     }, './feeds/hindawi.xml'
 
-    generator.on 'end', (xml) ->
+    generator.on 'feedgenerated', (xml) ->
         fs.writeFile xml, done
 
     generator.on 'initialized', ->
@@ -42,10 +42,12 @@ instead it emits an 'end' event with the XML string.
     generator.initialize()
 
 
-@event initialized - Called when the generator has checked for a cached feed and finished processing it.
+@event initialized - Emitted when the generator has checked for a cached feed and finished processing it.
 
-@event end - This event is emitted when the whole XML data is ready
+@event feedgenerated - Emitted when the whole XML data is ready
     @type {Object}
+
+@event error
 
 ###
 module.exports = class FeedGenerator extends EventEmitter
@@ -75,7 +77,7 @@ module.exports = class FeedGenerator extends EventEmitter
         try
             xml = fs.readFileSync(@cachedXMLPath).toString()
             @feed = new CachedFeed xml, @feedConfig
-            @feed.parser.on 'end', =>
+            @feed.parser.on 'pageparsed', =>
                 @emit 'initialized'
                 log 'info', "Reusing cached feed file #{@cachedXMLPath}"
                 log 'debug', "Cached feed XML length is #{xml.length}"
@@ -101,7 +103,7 @@ module.exports = class FeedGenerator extends EventEmitter
 
 
     ###
-    Generates the feed as XML, emits an `end` event on finish with the XML data
+    Generates the feed as XML, emits an `feedgenerated` event on finish with the XML data
     ###
     generate: ->
         pageUrl        = @config.url
@@ -120,13 +122,13 @@ module.exports = class FeedGenerator extends EventEmitter
             return @emit 'error', err if err
             xml = @feed.xml()
             log 'verbose', 'Feed is ready be written!'
-            @emit 'end', xml
+            @emit 'feedgenerated', xml
 
         loadPage = (done) =>
             log 'info', "Loading page ##{loaded + 1} (#{pageUrl})"
 
             loader = new PageLoader pageUrl
-            loader.on 'pageLoaded', (html) =>
+            loader.on 'pageloaded', (html) =>
                 log 'verbose', 'PageLoader finished', pageUrl, html.length
                 parser = new PageParser html, @config
 
@@ -143,7 +145,7 @@ module.exports = class FeedGenerator extends EventEmitter
                     log 'verbose', 'Got item', _.omit item, 'description'
                     articles.push item.url
 
-                parser.on 'end', ->
+                parser.on 'pageparsed', ->
                     loaded += 1
                     if parser.hasNext
                         pageUrl = parser.nextPage

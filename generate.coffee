@@ -32,7 +32,7 @@ startFeed = (feedId) ->
         generator.on 'error', (err) ->
             log 'error', 'FeedGenerator error', err
 
-        generator.on 'end', (xml) ->
+        generator.on 'feedgenerated', (xml) ->
             fs.writeFileSync xmlFile, xml
             log 'info', "Feed #{feedId} written to #{xmlFile}"
 
