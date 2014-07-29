@@ -36,7 +36,7 @@ be added as usual using the `Feed#item` method.
 ###
 module.exports = class CachedFeed extends Feed
     # @private {String} lastArticleUrl used internally to detect state
-    lastArticleUrl = null
+    lastArticleUrl: null
 
     ###
     @param {String} xml XML string of the cached feed
