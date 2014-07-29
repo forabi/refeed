@@ -13,7 +13,9 @@ feed prototype whenever an XML file for the feed exists. New items can
 be added as usual using the `Feed#item` method.
 
 @example
-    feed = new CachedFeed fs.readFileSync('some.xml').toString(), {
+    xml = fs.readFileSync('some.xml').toString()
+
+    feed = new CachedFeed xml, {
         title: ...
         url: ...
         description: ...
@@ -36,6 +38,10 @@ module.exports = class CachedFeed extends Feed
     # @private {String} lastArticleUrl used internally to detect state
     lastArticleUrl = null
 
+    ###
+    @param {String} xml XML string of the cached feed
+    @param {Object} config Configuration object passed to the internal `PageParser`, see {PageParser.constructor} for details
+    ###
     constructor: (xml, config) ->
         config = _.defaults (_.clone rss, yes), config
         config.xmlMode = yes
@@ -49,6 +55,10 @@ module.exports = class CachedFeed extends Feed
 
         super config
 
+    ###
+    Starts processing the XML and adding cached items
+     You should listen for `pageparsed` event on `.parser`.
+    ###
     load: ->
         @parser.start()
     ###

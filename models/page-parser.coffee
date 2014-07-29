@@ -124,14 +124,16 @@ module.exports = class PageParser extends EventEmitter
 
     ###
     @property {String} nextPage The URL of the next page to load, found using the `nextPage` selector
-    @property {Boolean} hasNext whether a match for the `nextPage` selector is found
     ###
-
     Object.defineProperty @prototype, 'nextPage', {
         get: ->
             href = @$(@selectors.nextPage).attr('href') || ''
             if url then url.resolve @config.host, href else null
     }
+
+    ###
+    @property {Boolean} hasNext whether a match for the `nextPage` selector is found
+    ###
     Object.defineProperty @prototype, 'hasNext', {
         get: ->
             @$(@selectors.nextPage).length
