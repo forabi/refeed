@@ -50,7 +50,7 @@ module.exports = class CachedFeed extends Feed
 
         @parser = new PageParser xml, config
         @parser.on 'item', (item) =>
-            unless lastArticleUrl then lastArticleUrl = item.url
+            unless @lastArticleUrl then @lastArticleUrl = item.url
             @item item
 
         super config
