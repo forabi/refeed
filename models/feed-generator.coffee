@@ -21,7 +21,7 @@ defaults   = require '../defaults.json'
 ###
 This model takes care of all the tasks required to generate the raw XML data
 that are then written to a file. Note that it does not directly write the file,
-instead it emits an 'feedgenerated' event with the XML string.
+instead it emits a 'feedgenerated' event with the XML string.
 
 @example
     generator = new FeedGenerator 'hindawi', {
@@ -45,7 +45,6 @@ instead it emits an 'feedgenerated' event with the XML string.
 @event initialized - Emitted when the generator has checked for a cached feed and finished processing it.
 
 @event feedgenerated - Emitted when the whole XML data is ready
-    @type {Object}
 
 @event error
 
@@ -103,7 +102,7 @@ module.exports = class FeedGenerator extends EventEmitter
 
 
     ###
-    Generates the feed as XML, emits an `feedgenerated` event on finish with the XML data
+    Generates the feed as XML, emits a `feedgenerated` event on finish with the XML data
     ###
     generate: ->
         pageUrl        = @config.url

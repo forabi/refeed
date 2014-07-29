@@ -23,8 +23,8 @@ be added as usual using the `Feed#item` method.
         }
     }
 
-    # You must listen for the end event on `parser` before adding new items
-    feed.parser.on 'end', ->
+    # You must listen for the `pageparsed` event on `.parser` before adding new items
+    feed.parser.on 'pageparsed', ->
         feed.item {
             title: 'New post',
             date: ...
@@ -34,7 +34,7 @@ be added as usual using the `Feed#item` method.
 ###
 module.exports = class CachedFeed extends Feed
     # @private {String} lastArticleUrl used internally to detect state
-    lastArticleUrl: null
+    lastArticleUrl = null
 
     constructor: (xml, config) ->
         config = _.defaults (_.clone rss, yes), config
@@ -44,7 +44,7 @@ module.exports = class CachedFeed extends Feed
 
         @parser = new PageParser xml, config
         @parser.on 'item', (item) =>
-            unless @lastArticleUrl then @lastArticleUrl = item.url
+            unless lastArticleUrl then lastArticleUrl = item.url
             @item item
 
         super config

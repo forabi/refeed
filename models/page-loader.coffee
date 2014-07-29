@@ -19,7 +19,7 @@ module.exports = class PageLoader extends EventEmitter
 
     ###
     Loads the page, listeners for `pageloaded` and `error` should be added before this method is called
-    @options {Object} options Additional options for the internal `request` call
+    @param {Object} options Additional options for the internal `request` call
     ###
     load: (options = {}) ->
         options.url = @url
