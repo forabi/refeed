@@ -27,7 +27,7 @@ for example a title or description field.
 module.exports = class BlockParser
     ###
     @param {Object} config A configuration object
-    @option config {Object} selectors see {FeedGenerator.constructor} for details
+    @option config {Object} selectors see {FeedGenerator#constructor} for details
     @option config {Boolean} xmlMode
     ###
     constructor: (config) ->

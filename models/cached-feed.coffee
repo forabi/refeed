@@ -40,7 +40,7 @@ module.exports = class CachedFeed extends Feed
 
     ###
     @param {String} xml XML string of the cached feed
-    @param {Object} config Configuration object passed to the internal `PageParser`, see {PageParser.constructor} for details
+    @param {Object} config Configuration object passed to the internal `PageParser`, see {PageParser#constructor} for details
     ###
     constructor: (xml, config) ->
         config = _.defaults (_.clone rss, yes), config
