@@ -2,6 +2,8 @@ reFeed
 ===========
 A service that offers RSS feeds for websites that do not natively provide them.
 
+[API Documentation](https://forabi.github.io/refeed/)
+
 reFeed is composed of two main components, the _core_ and the _client_.
 
 Core
