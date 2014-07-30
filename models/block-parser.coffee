@@ -47,7 +47,7 @@ module.exports = class BlockParser
         $el = $block.removeClass().find selectors.item[field]
         switch field
             when 'title' or 'author'
-                $el.text()
+                $el.text() || null
             when 'description'
                 mode = if config.xmlMode then 'text' else 'html'
                 try
@@ -72,12 +72,12 @@ module.exports = class BlockParser
 
                         str = $$.html()
 
-                    str
+                    str.trim() || null
                 catch e
                     console.log 'Error in parsing article description', e
-                    $el[mode]()
+                    $el[mode]().trim() || null
             when 'url'
-                relative = $el.attr('href') || $el.text()
+                relative = $el.attr('href') || $el.text() || null
                 try
                     url.resolve config.host, relative
                 catch
@@ -87,4 +87,4 @@ module.exports = class BlockParser
                     chrono.parseDate $el.text()
                 catch e
                     log 'warn', 'Error parsing date', e
-                    config.fallbackDate
+                    config.fallbackDate || null
