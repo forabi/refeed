@@ -49,7 +49,8 @@ module.exports = class PageParser extends EventEmitter
         @$ = cheerio.load @html, _.pick config, 'xmlMode', 'decodeEntities'
 
         if not config.selectors
-            throw new Error 'No selectors were specified for PageParser instance'
+            throw new Error 'No selectors were specified
+            for PageParser instance'
         @selectors = config.selectors
 
         log 'verbose', "PageParser initialized for feed #{@config.title}",
