@@ -40,11 +40,20 @@ module.exports = class PageParser extends EventEmitter
     @option config.selectors {String, undefined} full_page If specified, the parser will try to load and extract the full page located at `item.url`
     ###
     constructor: (@html, @config) ->
+        if not @html
+            throw new Error 'PageParser must be initialized with HTML/XML
+            string as first parameter'
+
         super()
+
+        @$ = cheerio.load @html, _.pick config, 'xmlMode', 'decodeEntities'
+
+        if not config.selectors
+            throw new Error 'No selectors were specified for PageParser instance'
+        @selectors = config.selectors
+
         log 'verbose', "PageParser initialized for feed #{@config.title}",
             @config
-        @$ = cheerio.load @html, _.pick config, 'xmlMode', 'decodeEntities'
-        @selectors = config.selectors
 
     ###
     Starts parsing the page.
@@ -66,9 +75,9 @@ module.exports = class PageParser extends EventEmitter
             'categories', 'copyright', 'image_url', 'managingEditor',
             'docs', 'webMaster'
         ]
-            matches = $ ":not(#{@selectors.item.block}) #{@selectors[metadata]}"
+            matches = $ "#{@selectors[metadata]}:not(#{@selectors.item.block})"
             if matches.length > 0
-                object = new Object
+                object = { }
                 object[metadata] = matches.text()
                 self.emit 'metadata', object
 
@@ -85,7 +94,8 @@ module.exports = class PageParser extends EventEmitter
                 for property in [
                     'title', 'author', 'description', 'url', 'date'
                 ]
-                    item[property] = blockParser.parse property, $block
+                    parsedBlock = blockParser.parse property, $block
+                    if parsedBlock then item[property] = parsedBlock
 
                 items.push item
                 log 'verbose', 'Emitting item', item.url
