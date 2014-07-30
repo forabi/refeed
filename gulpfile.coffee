@@ -16,10 +16,18 @@ plugins = (require 'gulp-load-plugins')()
 config = _.defaults gutil.env,
     src:
         root: '.'
+        coffee: ['{models,spec}/**/*.coffee', '*.coffee']
         specs: 'spec/*.coffee'
 
-gulp.task 'default', -> null
+gulp.task 'coffeelint', ->
+    gulp.src config.src.coffee, (cwd: config.src.root)
+    .pipe plugins.coffeelint()
+    .pipe plugins.coffeelint.reporter()
+
+gulp.task 'lint', ['coffeelint']
 
 gulp.task 'test', ->
-    gulp.src config.src.specs, cwd: config.src.root
+    gulp.src config.src.specs, (cwd: config.src.root)
     .pipe plugins.jasmine timeout: 10000
+
+gulp.task 'default', ['lint', 'test']

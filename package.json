@@ -2,10 +2,10 @@
   "name": "Refeed",
   "version": "0.0.1",
   "description": "A service that offers RSS feeds for websites that do not natively provide them.",
-  "main": "serve.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node serve.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "test": "gulp test"
   },
   "repository": {
     "type": "git",
@@ -43,6 +43,7 @@
     "coffeelint": "^1.5.2",
     "gulp": "^3.8.6",
     "gulp-coffee": "^2.1.1",
+    "gulp-coffeelint": "^0.3.3",
     "gulp-jasmine": "^0.3.0",
     "gulp-load-plugins": "^0.5.3",
     "gulp-util": "^3.0.0"
