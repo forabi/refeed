@@ -55,8 +55,8 @@ describe 'PageParser', ->
             expect(@metadata.description).toBe 'Page description'
 
             expect(@items).toEqual [
-                (title: 'New Article', description: 'Hello world, again!')
-                (title: 'Old Article', description: 'Hello world!')
+                ( title: 'New Article', description: 'Hello world, again!' )
+                ( title: 'Old Article', description: 'Hello world!' )
             ]
 
             done()
