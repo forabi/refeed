@@ -105,23 +105,27 @@ module.exports = class FeedGenerator extends EventEmitter
     Generates the feed as XML, emits a `feedgenerated` event on finish with the XML data
     ###
     generate: ->
-        pageUrl        = @config.url
-        loaded         = 0
-        articles       = []
-        parser         = null
+        pageUrl          = @config.url
+        loaded           = 0
+        loadedItems      = []
+        totalCachedItems = @feed.items.length || 0
+        parser           = null
 
         noMoreArticles = =>
             (typeof pageUrl isnt 'string') or
             (loaded >= @maxPages and
                 (@forceLimit or @feed.lastArticleUrl is null)) or
-            (_.contains articles, @feed.lastArticleUrl) or
+            (_.contains loadedItems, @feed.lastArticleUrl) or
             (!!parser and not parser.hasNext)
 
         end = (err) =>
             return @emit 'error', err if err
             xml = @feed.xml()
             log 'verbose', 'Feed is ready be written!'
-            @emit 'feedgenerated', xml
+            @emit 'feedgenerated', {
+                xml,
+                totalNew: (@feed.items.length || 0) - totalCachedItems
+            }
 
         loadPage = (done) =>
             log 'info', "Loading page ##{loaded + 1} (#{pageUrl})"
@@ -140,9 +144,13 @@ module.exports = class FeedGenerator extends EventEmitter
                         @feed[key] ?= value
 
                 parser.on 'item', (item) =>
-                    @feed.item item
+                    exists = _.some @feed.items, (i) ->
+                        i.url is item.url
+
+                    @feed.item item if not exists
+
                     log 'verbose', 'Got item', _.omit item, 'description'
-                    articles.push item.url
+                    loadedItems.push item.url
 
                 parser.on 'pageparsed', ->
                     loaded += 1
