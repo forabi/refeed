@@ -34,7 +34,7 @@
         </p>
       </nav>
       <div id='filecontents'>
-        <h1 id="refeed">reFeed</h1><p>A service that offers RSS feeds for websites that do not natively provide them.</p><p>reFeed is composed of two main components, the <em>core</em> and the <em>client</em>.</p><h2 id="core">Core</h2><p>The core is the engine that takes care of fetching, caching and updating the RSS feeds. Each task is handled by a standalone model:</p><ul>
+        <h1 id="refeed">reFeed</h1><p>A service that offers RSS feeds for websites that do not natively provide them.</p><p><a href="https://forabi.github.io/refeed/">API Documentation</a></p><p>reFeed is composed of two main components, the <em>core</em> and the <em>client</em>.</p><h2 id="core">Core</h2><p>The core is the engine that takes care of fetching, caching and updating the RSS feeds. Each task is handled by a standalone model:</p><ul>
 <li>a <code>PageLoader</code> is responsible for requesting the webpage located at a specific <code>url</code> and returning the <code>String</code> representation of the response body.</li>
 <li>a <code>PageParser</code> is instantiated with the <code>html</code> data and other <code>config</code> data to parse the webpage and try to find a set of items that can be recognized as articles. The rules a <code>PageParser</code> uses to recognize articles are defined on a per-feed basis as a collection of CSS selectors. This may be extended in the future to handle complex page layouts that require more sophisticated ways of parsing. For an example of a feed configuration file, take a look at <a href="json/hindawi.json">json/hindawi.json</a></li>
 <li>a <code>FeedGenerator</code> takes a <code>feedId</code>, a <code>config</code> object and an optional <code>xmlFile</code> argument that represents a path to cached version of a feed (<code>feedId</code>). <code>FeedGenerator</code> makes use of the cached version so that the engine does not have to fetch the whole website every time a few articles are added. It may instantiate one or more <code>PageLoader</code>s and <code>PageParser</code>s.</li>
@@ -59,7 +59,7 @@
       </div>
     </div>
     <div id='footer'>
-  July 29, 14 06:47:22 by
+  July 30, 14 18:50:57 by
   <a href='https://github.com/coffeedoc/codo' title='CoffeeScript API documentation generator'>
     Codo
   </a>
