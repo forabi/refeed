@@ -1,12 +1,14 @@
 log = require './logger'
 
-config        = require './config.js'
+config        = require './config'
 
 fs            = require 'fs'
 _             = require 'lodash'
 async         = require 'async'
 path          = require 'path'
 mkdirp        = require 'mkdirp'
+
+moment        = require 'moment'
 
 FeedGenerator = require './models/feed-generator'
 
@@ -27,21 +29,23 @@ startFeed = (feedId) ->
         log 'debug', 'Feed configuration:', feedConfig
 
         generator = new FeedGenerator feedId, feedConfig, xmlFile
-        generator.maxPages = config.max_pages_per_feed
+        generator.maxPages = config.generator.max_pages_per_feed
 
         generator.on 'error', (err) ->
             log 'error', 'FeedGenerator error', err
 
-        generator.on 'feedgenerated', (xml) ->
-            fs.writeFileSync xmlFile, xml
-            log 'info', "Feed #{feedId} written to #{xmlFile}"
+        generator.on 'feedgenerated', (result) ->
+            fs.writeFileSync xmlFile, result.xml
+            log 'info', "Feed #{feedId} written to
+            #{xmlFile} with #{result.totalNew} new items"
 
             setTimeout ->
                 log info "Updating #{feedId}..."
                 updateFeed feedId
-            , config.default_interval
+            , config.generator.default_interval
 
-            log 'info', "Feed scheduled to update in #{config.default_interval}"
+            log 'info', "Feed #{feedId} scheduled to update in
+            #{moment.duration(config.generator.default_interval).humanize()}"
 
         generator.on 'initialized', generator.generate.bind generator
 
