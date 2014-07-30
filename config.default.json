@@ -1,5 +1,17 @@
 {
-    "connection": {
-
+    "server": {
+        "port": 3000,
+        "host": "localhost"
+    },
+    "dirs": {
+        "root": ".",
+        "feeds": "feeds"
+    },
+    "database": {
+        "connection": null
+    },
+    "generator": {
+        "max_pages_per_feed": 10,
+        "default_interval": 3600000
     }
 }
