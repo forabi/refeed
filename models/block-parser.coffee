@@ -59,8 +59,6 @@ module.exports = class BlockParser
                         $el.each ->
                             str += cheerio.load(this)[mode]()
 
-                    # console.log 'str:', str
-
                     if mode is 'html'
                         # Resolve relative links
                         $$ = cheerio.load str
