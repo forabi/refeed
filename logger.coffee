@@ -1,5 +1,7 @@
 winston = require 'winston'
 
+config = require './config'
+
 logger = new winston.Logger
     levels:
         verbose: 0
@@ -16,7 +18,7 @@ logger = new winston.Logger
 
 
     transports: [
-        new winston.transports.Console level: 'info'
+        new winston.transports.Console level: config.logger.level
     ]
 
 winston.addColors colors

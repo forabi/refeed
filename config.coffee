@@ -18,4 +18,7 @@ module.exports = _.defaults (
         max_pages_per_feed: 1
         default_interval: HOUR
 
+    logger:
+        level: 'debug'
+
 ), require './config.default.json'

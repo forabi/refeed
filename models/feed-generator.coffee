@@ -144,12 +144,15 @@ module.exports = class FeedGenerator extends EventEmitter
                         @feed[key] ?= value
 
                 parser.on 'item', (item) =>
-                    exists = _.some @feed.items, (i) ->
-                        i.url is item.url
+                    exists =
+                        _.some @feed.items, (i) ->
+                            i.url is item.url
 
                     @feed.item item if not exists
 
-                    log 'verbose', 'Got item', _.omit item, 'description'
+                    log 'debug', 'Item already exists in
+                    cached feed', item.url if exists
+
                     loadedItems.push item.url
 
                 parser.on 'pageparsed', ->

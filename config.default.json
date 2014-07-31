@@ -13,5 +13,8 @@
     "generator": {
         "max_pages_per_feed": 10,
         "default_interval": 3600000
+    },
+    "logger": {
+        "level": "info"
     }
 }
