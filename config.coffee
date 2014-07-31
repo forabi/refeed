@@ -15,7 +15,7 @@ module.exports = _.defaults (
         connection: ''
 
     generator:
-        max_pages_per_feed: 1
+        max_pages_per_feed: 10
         default_interval: HOUR
 
     logger:
