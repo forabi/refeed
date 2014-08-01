@@ -19,6 +19,6 @@ module.exports = _.defaults (
         default_interval: HOUR
 
     logger:
-        level: 'debug'
+        level: 'info'
 
 ), require './config.default.json'
