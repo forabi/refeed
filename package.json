@@ -2,9 +2,9 @@
   "name": "Refeed",
   "version": "0.0.1",
   "description": "A service that offers RSS feeds for websites that do not natively provide them.",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node index.js",
     "test": "gulp test"
   },
   "repository": {
