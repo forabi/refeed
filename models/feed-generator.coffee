@@ -59,9 +59,16 @@ module.exports = class FeedGenerator extends EventEmitter
         if 'string' is typeof config.inherits
             log 'debug', "Feed #{feedId} inherits prototype #{config.inherits}"
             config =
-                _.defaults config, require "../prototypes/#{config.inherits}"
+                _.merge config, require "../prototypes/#{config.inherits}"
 
-        config.site_url = config.url
+        if config.url.href then config.url = url.parse config.url.href
+
+        config.site_url = url.format config.url
+
+        host = _.pick config.url, 'protocol', 'host', 'auth'
+        config.host = url.format host
+
+        log 'verbose', "Host is #{config.host}"
 
         @config = _.defaults config, defaults
 
@@ -87,8 +94,13 @@ module.exports = class FeedGenerator extends EventEmitter
         catch e
             @feed = new Feed @feedConfig
             @emit 'initialized'
-            log 'warn', "Something went wrong while loading the cached feed,
-            was expected at #{@cachedXMLPath}, rebuilding feed...", e.toString()
+            switch e.code
+                when 'ENOENT'
+                    log 'warn', "Feed #{@feedId} is not cached,
+                    was expected at #{@cachedXMLPath}"
+                else
+                    log 'error', "Something went wrong while loading the cached feed,
+                    rebuilding...", e.toString()
 
     ###
     @property [Number] The maximum number of pages to load, each page instantiates a new `PageLoader`
@@ -105,7 +117,7 @@ module.exports = class FeedGenerator extends EventEmitter
     Generates the feed as XML, emits a `feedgenerated` event on finish with the XML data
     ###
     generate: ->
-        pageUrl          = @config.url
+        pageUrl = @config.url.href || url.format @config.url
         loaded           = 0
         loadedItems      = []
         totalCachedItems = @feed.items.length || 0
@@ -120,6 +132,10 @@ module.exports = class FeedGenerator extends EventEmitter
 
         end = (err) =>
             return @emit 'error', err if err
+
+            # if _.some @feed.items, ((i) -> i.date?)
+                # @feed.items = _.sortBy(@feed.items, 'date').reverse()
+
             xml = @feed.xml()
             log 'verbose', 'Feed is ready be written!'
             @emit 'feedgenerated', {
@@ -132,7 +148,7 @@ module.exports = class FeedGenerator extends EventEmitter
 
             loader = new PageLoader pageUrl
             loader.on 'pageloaded', (html) =>
-                log 'verbose', 'PageLoader finished', pageUrl, html.length
+                log 'debug', 'PageLoader finished', pageUrl, html.length
                 parser = new PageParser html, @config
 
                 parser.on 'error', (err) ->
@@ -144,14 +160,20 @@ module.exports = class FeedGenerator extends EventEmitter
                         @feed[key] ?= value
 
                 parser.on 'item', (item) =>
+                    if not item.url
+                        return @emit 'error', new Error 'NO_ITEM_URL'
+
                     exists =
                         _.some @feed.items, (i) ->
                             i.url is item.url
 
-                    @feed.item item if not exists
-
-                    log 'debug', 'Item already exists in
-                    cached feed', item.url if exists
+                    if not exists
+                        @feed.item item
+                        log 'debug', 'Added new item:',
+                            _.omit item, 'description'
+                    else
+                        log 'debug', 'Item already exists in
+                        cached feed', item.url
 
                     loadedItems.push item.url
 

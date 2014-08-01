@@ -1,11 +1,13 @@
 {
-    "host": "https://m.facebook.com/",
+    "url": {
+        "protocol": "https",
+        "host": "m.facebook.com"
+    },
     "selectors": {
         "title": "#m_timeline_cover_section tbody td:nth-child(2) #u_0_0 span:first-child",
         "description": "[data-sigil='cover-info-section'] > div:nth-child(3)",
         "item": {
             "block": "#recent [data-sigil='tlUnit']:not(:nth-child(1)) > div",
-            "title": null,
             "author": "div:first-child > span",
             "description": "div:not(:first-child):not(:last-child)",
             "url": "a[aria-label='Likes']",

@@ -1,7 +1,9 @@
 {
     "title": "مؤسسة هنداوي",
     "host": "http://www.hindawi.org/",
-    "url": "http://www.hindawi.org/books/",
+    "url": {
+        "href": "http://www.hindawi.org/books/"
+    },
     "language": "ar",
     "selectors": {
         "item": {

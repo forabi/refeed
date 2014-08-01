@@ -7,7 +7,10 @@
             "title": "title",
             "author": "author",
             "description": "description",
-            "url": "link",
+            "url": {
+                "element": "link",
+                "method": "text"
+            },
             "date": "pubDate"
         }
     }

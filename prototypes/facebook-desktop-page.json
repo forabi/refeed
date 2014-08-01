@@ -1,0 +1,26 @@
+{
+    "url": {
+        "protocol": "https",
+        "host": "www.facebook.com",
+        "search": "_fb_noscript=1"
+    },
+    "selectors": {
+        "title": "#fbProfileCover h2 span:first-child",
+        "description": "#fbProfileCover h2 ~ span",
+        "image_url": {
+            "element": "#fbPageFinchProfilePic img",
+            "method": "attr",
+            "arg": "src"
+        },
+        "item": {
+            "block": ".timelineUnitContainer",
+            "description": "[role='article'] > :not(:first-child)",
+            "url": "a.uiLinkSubtle",
+            "date": {
+                "element": "abbr[data-utime]",
+                "method": "attr",
+                "arg": "title"
+            }
+        }
+    }
+}

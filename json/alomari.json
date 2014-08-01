@@ -1,6 +1,8 @@
 {
-    "inherits": "facebook-mobile-page",
+    "inherits": "facebook-desktop-page",
     "title": "أحمد خيري العمري",
-    "url": "https://m.facebook.com/Ahmed.Khairi.Alomari",
+    "url": {
+        "pathname": "/Ahmed.Khairi.Alomari"
+    },
     "language": "ar"
 }
