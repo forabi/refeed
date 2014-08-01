@@ -43,7 +43,7 @@ module.exports = class CachedFeed extends Feed
     @param {Object} config Configuration object passed to the internal `PageParser`, see {PageParser#constructor} for details
     ###
     constructor: (xml, config) ->
-        config = _.defaults (_.clone rss, yes), config
+        config = _.merge (_.clone config, yes), rss
         config.xmlMode = yes
         config.decodeEntities = yes
 
@@ -52,6 +52,10 @@ module.exports = class CachedFeed extends Feed
         @parser.on 'item', (item) =>
             unless @lastArticleUrl then @lastArticleUrl = item.url
             @item item
+
+        @parser.on 'metadata', (object) =>
+            for key, value of object
+                @[key] ?= value
 
         super config
 
