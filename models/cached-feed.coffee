@@ -1,5 +1,7 @@
 log = require  "#{process.cwd()}/logger"
 
+EventEmitter = require('events').EventEmitter
+
 _            = require 'lodash'
 Feed         = require 'rss'
 PageParser   = require './page-parser'
@@ -25,8 +27,8 @@ be added as usual using the `Feed#item` method.
         }
     }
 
-    # You must listen for the `pageparsed` event on `.parser` before adding new items
-    feed.parser.on 'pageparsed', ->
+    # You must listen for the `pageparsed` event before adding new items
+    feed.on 'pageparsed', ->
         feed.item {
             title: 'New post',
             date: ...
@@ -35,9 +37,10 @@ be added as usual using the `Feed#item` method.
     feed.load()
 ###
 module.exports = class CachedFeed extends Feed
-    # @private {String} lastArticleUrl used internally to detect state
+    ###
+    @property {String} (read-only)
+    ###
     lastArticleUrl: null
-
     ###
     @param {String} xml XML string of the cached feed
     @param {Object} config Configuration object passed to the internal `PageParser`, see {PageParser#constructor} for details
@@ -47,24 +50,33 @@ module.exports = class CachedFeed extends Feed
         config.xmlMode = yes
         config.decodeEntities = yes
 
-
-        @parser = new PageParser xml, config
-        @parser.on 'item', (item) =>
+        @_event_emitter = new EventEmitter
+        @_parser = new PageParser xml, config
+        @_parser.on 'item', (item) =>
             unless @lastArticleUrl then @lastArticleUrl = item.url
             @item item
 
-        @parser.on 'metadata', (object) =>
+        @_parser.on 'metadata', (object) =>
             for key, value of object
-                @[key] = value if not @[key]
+                @[key] = value
+
+        @_parser.on 'pageparsed', =>
+            @_event_emitter.emit 'ready'
+            # done()
 
         super config
 
     ###
     Starts processing the XML and adding cached items
-     You should listen for `pageparsed` event on `.parser`.
+     You should listen for `ready` event on the CachedFeed instance.
     ###
     load: ->
-        @parser.start()
+        @_parser.start()
+
     ###
-    @property {PageParser} an instance of PageParser used to parse the cached XML data
+    Adds an event listener on the internal page parser
+    @param {String} event Only `'ready'` is currently accepted
+    @param {Function} fn Function to call
     ###
+    on: (event, fn) ->
+        @_event_emitter.on event, fn

@@ -63,7 +63,7 @@ module.exports = class PageParser extends EventEmitter
         for property in fields
             try
                 value =
-                    @blockParser.parse $block, property, selectors[property]
+                    @articleParser.parse $block, property, selectors[property]
 
                 article[property] = value if value
             catch e
@@ -71,7 +71,7 @@ module.exports = class PageParser extends EventEmitter
         return article
 
     parseMetadataField: ($root, key, selector, done) ->
-        @blockParser.parse $root, key, selector
+        @metadataParser.parse $root, key, selector
 
     getFullPage: (article, done) ->
         loader = new PageLoader article.url
@@ -95,7 +95,8 @@ module.exports = class PageParser extends EventEmitter
     start: ->
         # self = this
         $root = @$.root()
-        @blockParser = new BlockParser @config
+        @articleParser = new BlockParser @config
+        @metadataParser = new BlockParser { mode: 'text' }
 
         articleSelectors = @selectors.item
 

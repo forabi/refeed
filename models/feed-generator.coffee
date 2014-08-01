@@ -83,7 +83,7 @@ module.exports = class FeedGenerator extends EventEmitter
         try
             xml = fs.readFileSync(@cachedXMLPath).toString()
             @feed = new CachedFeed xml, @feedConfig
-            @feed.parser.on 'pageparsed', =>
+            @feed.on 'ready', =>
                 @emit 'initialized'
                 log 'info', "Reusing cached feed file #{@cachedXMLPath}"
                 log 'debug', "Cached feed XML length is #{xml.length}"
@@ -157,7 +157,8 @@ module.exports = class FeedGenerator extends EventEmitter
                 parser.on 'metadata', (object) =>
                     log 'debug', 'Got metadata:', object
                     for key, value of object
-                        @feed[key] = value if not @feed[key]
+                        if value and not @feed[key]
+                            @feed[key] = value
 
                 parser.on 'item', (item) =>
                     if not item.url

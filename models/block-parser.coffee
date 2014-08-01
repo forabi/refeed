@@ -44,11 +44,11 @@ module.exports = class BlockParser
         log 'debug', "Parsing block for #{field}, selector:", selectorObject
         $el = getElement $block, selectorObject
 
-        host = config.host
+        try host = config.host
 
         switch field
             when 'description'
-                mode = if config.xmlMode then 'text' else 'html'
+                mode = if config.xmlMode then 'text' else config.mode || 'html'
                 # log 'debug', "Parsing description in #{mode} mode..."
                 try
                     str = ''
@@ -133,5 +133,5 @@ module.exports = class BlockParser
         if not selectorObject
             null
         else if typeof selectorObject is 'string'
-            $element.text().trim()
+            $element.first().text().trim()
         else $element[selectorObject.method](selectorObject.arg || undefined)
