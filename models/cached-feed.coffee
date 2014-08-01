@@ -48,7 +48,7 @@ module.exports = class CachedFeed extends Feed
     @param config {Object} Configuration object passed to the internal `PageParser`, see {PageParser#constructor} for details
     ###
     constructor: (xml, config = { selectors: { } }) ->
-        config = _.merge (_.clone config, yes), rss
+        config = _.merge (_.clone config, yes), (_.clone rss, yes)
         config.xmlMode = yes
         config.decodeEntities = yes
 
