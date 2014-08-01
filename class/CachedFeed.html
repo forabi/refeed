@@ -63,8 +63,8 @@ be added as usual using the <code>Feed#item</code> method.</p>
       }
   }
 
-  # You must listen for the `pageparsed` event on `.parser` before adding new items
-  feed.parser.on &#39;pageparsed&#39;, -&gt;
+  # You must listen for the `ready` event before adding new items
+  feed.on &#39;ready&#39;, -&gt;
       feed.item {
           title: &#39;New post&#39;,
           date: ...
@@ -74,19 +74,37 @@ be added as usual using the <code>Feed#item</code> method.</p>
   </div>
 </div>
 <div class='tags'>
+  <div class='events'>
+    <h3>Events:</h3>
+    <div class='event'>
+      <p class='signature'>
+        ready
+      </p>
+      <div class='docstring'>
+  <ul>
+<li>Emitted when all cached metadata and items have been parsed and added</li>
+</ul>
+
 </div>
-      <h2>Variables Summary</h2>
-      <dl class='constants'>
-  <dt id='lastArticleUrl-variable'>
-    lastArticleUrl
-    =
-  </dt>
-  <dd>
-    <pre><code class='coffeescript'>null</code></pre>
-    <div class='tags'>
+<div class='tags'>
 </div>
-  </dd>
-</dl>
+    </div>
+  </div>
+</div>
+      <h2>Property Summary</h2>
+      <dl class='properties'>
+        <dt id='lastArticleUrl-property'>
+          <span class='signature'>
+            (String)
+            <b>
+              lastArticleUrl
+            </b>
+          </span>
+        </dt>
+        <dd class='desc'>
+          (read-only) 
+        </dd>
+      </dl>
       <h2>Instance Method Summary</h2>
       <ul class='summary'>
   <li>
@@ -98,8 +116,20 @@ be added as usual using the <code>Feed#item</code> method.</p>
       </a>
     </span>
     <span class='desc'>
-      Starts processing the XML and adding cached items  You should listen for <code>pageparsed</code> event on <code>.parser</code>.
+      Starts processing the XML and adding cached items  You should listen for <code>ready</code> event on the CachedFeed instance.
 
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#on-dynamic'>
+        #
+(void)
+<b>on</b><span>(event, fn)</span>
+      </a>
+    </span>
+    <span class='desc'>
+      Adds an event listener on the internal page parser 
     </span>
   </li>
 </ul>
@@ -109,7 +139,9 @@ be added as usual using the <code>Feed#item</code> method.</p>
     <p class='signature' id='constructor-dynamic'>
       #
 (void)
-<b>constructor</b><span>(xml, config)</span>
+<b>constructor</b><span>(xml, config = {
+  selectors: {}
+})</span>
       <br>
     </p>
     <div class='tags'>
@@ -150,15 +182,51 @@ be added as usual using the <code>Feed#item</code> method.</p>
     </p>
     <div class='docstring'>
   <p>Starts processing the XML and adding cached items
- You should listen for <code>pageparsed</code> event on <code>.parser</code>.</p>
+ You should listen for <code>ready</code> event on the CachedFeed instance.</p>
 </div>
 <div class='tags'>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='on-dynamic'>
+      #
+(void)
+<b>on</b><span>(event, fn)</span>
+      <br>
+    </p>
+    <div class='docstring'>
+  <p>Adds an event listener on the internal page parser</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>event</span>
+      <span class='type'>
+        (
+          <tt>String</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Only <code>&#39;ready&#39;</code> is currently accepted </span>
+    </li>
+    <li>
+      <span class='name'>fn</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Function to call </span>
+    </li>
+  </ul>
 </div>
   </div>
 </div>
     </div>
     <div id='footer'>
-  July 30, 14 20:22:42 by
+  August 01, 14 19:33:51 by
   <a href='https://github.com/coffeedoc/codo' title='CoffeeScript API documentation generator'>
     Codo
   </a>

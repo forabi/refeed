@@ -36,23 +36,18 @@
       <h2>Overview</h2>
       <div class='docstring'>
   <p>A block parser is responsible for parsing a single field of article fields,
-for example a title or description field.</p>
+for example a title or description field. It is also used to parse global
+metadata fields.</p>
   <div class='examples'>
     <h3>Examples:</h3>
     <h4>
       
     </h4>
     <pre><code class='coffeescript'>  blockParser = new BlockParser {
-      xmlMode: false,
-      selectors: {
-          title: ...,
-          item: {
-              block: ...
-          }
-      }
+      xmlMode: false
   }
 
-  item.title = blockParser.parse &#39;title&#39;, $block</code></pre>
+  item.title = blockParser.parse $block, &#39;title&#39;, &#39;h1&#39;</code></pre>
   </div>
 </div>
 <div class='tags'>
@@ -63,8 +58,8 @@ for example a title or description field.</p>
     <span class='signature'>
       <a href='#parse-dynamic'>
         #
-(String)
-<b>parse</b><span>(field, $block)</span>
+(String, Date)
+<b>parse</b><span>($block, field, selectorObject)</span>
       </a>
     </span>
     <span class='desc'>
@@ -100,22 +95,32 @@ for example a title or description field.</p>
   </h3>
   <ul class='options'>
     <li>
-      <span class='name'>selectors</span>
-      <span class='type'>
-        (
-          <tt>Object</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>see <a href='../class/FeedGenerator.html#constructor-dynamic'>FeedGenerator#constructor</a> for details </span>
-    </li>
-    <li>
       <span class='name'>xmlMode</span>
       <span class='type'>
         (
           <tt>Boolean</tt>
         )
       </span>
+    </li>
+    <li>
+      <span class='name'>mode</span>
+      <span class='type'>
+        (
+          <tt>String</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>either &#39;text&#39; or &#39;html&#39;, if xmlMode is set, this option is ignored </span>
+    </li>
+    <li>
+      <span class='name'>host</span>
+      <span class='type'>
+        (
+          <tt>String</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>If parsing a URL block, specifiy the host part of the feed URL to resolve full article url </span>
     </li>
   </ul>
 </div>
@@ -126,8 +131,8 @@ for example a title or description field.</p>
   <div class='method_details'>
     <p class='signature' id='parse-dynamic'>
       #
-(String)
-<b>parse</b><span>(field, $block)</span>
+(String, Date)
+<b>parse</b><span>($block, field, selectorObject)</span>
       <br>
     </p>
     <div class='docstring'>
@@ -137,13 +142,23 @@ for example a title or description field.</p>
     <h4>
       
     </h4>
-    <pre><code class='coffeescript'>  item.title = blockParser.parse &#39;title&#39;, $block
+    <pre><code class='coffeescript'>  item.title = blockParser.parse $block, &#39;title&#39;, &#39;h1&#39;
   # Where $block is a cheerio object</code></pre>
   </div>
 </div>
 <div class='tags'>
   <h3>Parameters:</h3>
   <ul class='param'>
+    <li>
+      <span class='name'>$block</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>A cheerio object to parse </span>
+    </li>
     <li>
       <span class='name'>field</span>
       <span class='type'>
@@ -155,14 +170,25 @@ for example a title or description field.</p>
       <span class='desc'>name of field to parse </span>
     </li>
     <li>
-      <span class='name'>$block</span>
+      <span class='name'>selectorObject</span>
       <span class='type'>
         (
-          <tt>Object</tt>
+          <tt>String, Object</tt>
         )
       </span>
       &mdash;
-      <span class='desc'>A cheerio object to parse </span>
+      <span class='desc'>An object or a string describing how to find the field, i.e. <code>&#39;h1&#39;</code> or <code>{ element: &#39;img&#39;, method: &#39;attr&#39;, arg: &#39;src&#39; }</code> </span>
+    </li>
+  </ul>
+  <h3>Throws:</h3>
+  <ul class='throw'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Error</tt>
+      )
+      &mdash;
+      <span class='desc'><code>NO_SELECTOR</code> </span>
     </li>
   </ul>
   <h3>Returns:</h3>
@@ -170,10 +196,10 @@ for example a title or description field.</p>
     <li>
       <span class='type'></span>
       (
-        <tt>String</tt>
+        <tt>String, Date</tt>
       )
       &mdash;
-      <span class='desc'>HTML/Text for field </span>
+      <span class='desc'>HTML/Text/Date for field (Date instance when <code>field is &#39;date&#39;</code>) </span>
     </li>
   </ul>
 </div>
@@ -181,7 +207,7 @@ for example a title or description field.</p>
 </div>
     </div>
     <div id='footer'>
-  July 30, 14 20:22:42 by
+  August 01, 14 19:33:51 by
   <a href='https://github.com/coffeedoc/codo' title='CoffeeScript API documentation generator'>
     Codo
   </a>

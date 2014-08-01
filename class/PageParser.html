@@ -94,6 +94,42 @@ The <code>config</code> object also includes some fallback properties.</p>
       <ul class='summary'>
   <li>
     <span class='signature'>
+      <a href='#parseArticle-dynamic'>
+        #
+(void)
+<b>parseArticle</b><span>($block, fields, selectors)</span>
+      </a>
+    </span>
+    <span class='note private title'>Private</span>
+    <span class='desc'>
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#parseMetadataField-dynamic'>
+        #
+(void)
+<b>parseMetadataField</b><span>($root, key, selector)</span>
+      </a>
+    </span>
+    <span class='note private title'>Private</span>
+    <span class='desc'>
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#getFullPage-dynamic'>
+        #
+(void)
+<b>getFullPage</b><span>(article, selector, done)</span>
+      </a>
+    </span>
+    <span class='note private title'>Private</span>
+    <span class='desc'>
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
       <a href='#start-dynamic'>
         #
 (void)
@@ -193,7 +229,7 @@ The <code>config</code> object also includes some fallback properties.</p>
       <span class='name'>title</span>
       <span class='type'>
         (
-          <tt>String</tt>
+          <tt>String, Object</tt>
         )
       </span>
     </li>
@@ -201,7 +237,7 @@ The <code>config</code> object also includes some fallback properties.</p>
       <span class='name'>description</span>
       <span class='type'>
         (
-          <tt>String</tt>
+          <tt>String, Object</tt>
         )
       </span>
     </li>
@@ -209,7 +245,7 @@ The <code>config</code> object also includes some fallback properties.</p>
       <span class='name'>author</span>
       <span class='type'>
         (
-          <tt>String</tt>
+          <tt>String, Object</tt>
         )
       </span>
     </li>
@@ -243,7 +279,7 @@ The <code>config</code> object also includes some fallback properties.</p>
       <span class='name'>block</span>
       <span class='type'>
         (
-          <tt>String</tt>
+          <tt>String, Object</tt>
         )
       </span>
       &mdash;
@@ -253,7 +289,7 @@ The <code>config</code> object also includes some fallback properties.</p>
       <span class='name'>title</span>
       <span class='type'>
         (
-          <tt>String</tt>
+          <tt>String, Object</tt>
         )
       </span>
       &mdash;
@@ -263,7 +299,7 @@ The <code>config</code> object also includes some fallback properties.</p>
       <span class='name'>author</span>
       <span class='type'>
         (
-          <tt>String</tt>
+          <tt>String, Object</tt>
         )
       </span>
       &mdash;
@@ -273,7 +309,7 @@ The <code>config</code> object also includes some fallback properties.</p>
       <span class='name'>description</span>
       <span class='type'>
         (
-          <tt>String</tt>
+          <tt>String, Object</tt>
         )
       </span>
       &mdash;
@@ -283,7 +319,7 @@ The <code>config</code> object also includes some fallback properties.</p>
       <span class='name'>date</span>
       <span class='type'>
         (
-          <tt>String</tt>
+          <tt>String, Object</tt>
         )
       </span>
       &mdash;
@@ -293,7 +329,7 @@ The <code>config</code> object also includes some fallback properties.</p>
       <span class='name'>url</span>
       <span class='type'>
         (
-          <tt>String</tt>
+          <tt>String, Object</tt>
         )
       </span>
       &mdash;
@@ -305,6 +341,145 @@ The <code>config</code> object also includes some fallback properties.</p>
 </div>
       <h2>Instance Method Details</h2>
       <div class='methods'>
+  <div class='method_details'>
+    <p class='signature' id='parseArticle-dynamic'>
+      #
+(void)
+<b>parseArticle</b><span>($block, fields, selectors)</span>
+      <span class='note private'>Private</span>
+      <br>
+    </p>
+    <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>$block</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>A cheerio object represnting a single article block </span>
+    </li>
+    <li>
+      <span class='name'>fields</span>
+      <span class='type'>
+        (
+          <tt>Array&lt;String&gt;</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Field names used to look for matching fields inside the article </span>
+    </li>
+    <li>
+      <span class='name'>selectors</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Selectors for the specified <code>fields</code> </span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='parseMetadataField-dynamic'>
+      #
+(void)
+<b>parseMetadataField</b><span>($root, key, selector)</span>
+      <span class='note private'>Private</span>
+      <br>
+    </p>
+    <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>$root</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>A cheerio object represnting the root element of the page </span>
+    </li>
+    <li>
+      <span class='name'>key</span>
+      <span class='type'>
+        (
+          <tt>String</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The metadata key to look for </span>
+    </li>
+    <li>
+      <span class='name'>selector</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The selector matching the <code>key</code> </span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='getFullPage-dynamic'>
+      #
+(void)
+<b>getFullPage</b><span>(article, selector, done)</span>
+      <span class='note private'>Private</span>
+      <br>
+    </p>
+    <div class='docstring'>
+  <div class='note todo'>
+    <strong>TODO:</strong>
+    Test this method 
+  </div>
+  
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>article</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>An parsed article object, i.e. <code>{ title: &#39;...&#39;, description: &#39;...&#39; }</code> </span>
+    </li>
+    <li>
+      <span class='name'>selector</span>
+      <span class='type'>
+        (
+          <tt>String</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The selector to use to find the main content block </span>
+    </li>
+    <li>
+      <span class='name'>done</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>A callback function to call on finish </span>
+    </li>
+  </ul>
+</div>
+  </div>
   <div class='method_details'>
     <p class='signature' id='start-dynamic'>
       #
@@ -326,7 +501,7 @@ The <code>config</code> object also includes some fallback properties.</p>
 </div>
     </div>
     <div id='footer'>
-  July 30, 14 20:22:42 by
+  August 01, 14 19:33:52 by
   <a href='https://github.com/coffeedoc/codo' title='CoffeeScript API documentation generator'>
     Codo
   </a>
