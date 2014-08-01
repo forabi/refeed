@@ -9,7 +9,7 @@ describe 'CachedFeed', ->
         @cachedFeed = new CachedFeed xml
 
     it 'should get the title from the xml', (done) ->
-        @cachedFeed.parser.on 'pageparsed', =>
+        @cachedFeed.on 'ready', =>
             expect(@cachedFeed.title).toBe 'مؤسسة هنداوي'
             done()
 
@@ -17,7 +17,7 @@ describe 'CachedFeed', ->
 
 
     it 'should sort feeds correctly even without date', (done) ->
-        @cachedFeed.parser.on 'pageparsed', =>
+        @cachedFeed.on 'ready', =>
             expect(_.first(@cachedFeed.items).title).toBe 'عرائس وشياطين'
             expect(_.last(@cachedFeed.items).title).toBe 'الإسلام وأوضاعنا السياسية'
             done()
@@ -26,7 +26,7 @@ describe 'CachedFeed', ->
 
 
     it 'should parse article data correctly', (done) ->
-        @cachedFeed.parser.on 'pageparsed', =>
+        @cachedFeed.on 'ready', =>
             expect(@cachedFeed.items[0].description).not.toBeNull()
             expect(@cachedFeed.items[0].date).not.toBeDefined()
             expect(@cachedFeed.items[0].author).not.toBeDefined()

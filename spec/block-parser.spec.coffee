@@ -1,9 +1,10 @@
-fs = require 'fs'
-_ = require 'lodash'
+fs      = require 'fs'
+_       = require 'lodash'
+cheerio = require 'cheerio'
 
 BlockParser = require '../models/block-parser'
 
-describe 'CachedFeed', ->
+describe 'BlockParser', ->
     html = '
         <h1>Title</h1>
         <label>Page description</label>
@@ -21,8 +22,9 @@ describe 'CachedFeed', ->
         </div>
     '
     beforeEach ->
-      @blockParser = new BlockParser html
+        @html = cheerio.load html
+        @blockParser = new BlockParser
 
     it 'should parse strings as HTML by default', ->
-        result = @blockParser.parse html, 'title', 'h1'
+        result = @blockParser.parse @html.root(), 'title', 'h1'
         expect(result).toEqual 'Title'
