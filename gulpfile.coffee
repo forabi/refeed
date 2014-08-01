@@ -20,7 +20,7 @@ config = _.defaults gutil.env,
         root: '.'
         coffee: ['{models,spec}/**/*.coffee', '*.coffee']
         specs: 'spec/*.coffee'
-        # specs: 'spec/page-parser.spec.coffee'
+        # specs: 'spec/cached-feed.spec.coffee'
 
 gulp.task 'coffeelint', ->
     gulp.src config.src.coffee, (cwd: config.src.root)

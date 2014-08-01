@@ -22,21 +22,23 @@ metadata fields.
 ###
 module.exports = class BlockParser
     ###
-    @param {Object} config A configuration object
+    @param config {Object} A configuration object
     @option config {Boolean} xmlMode
+    @option config {String} mode either 'text' or 'html', if xmlMode is set, this option is ignored
+    @option config {String} host If parsing a URL block, specifiy the host part of the feed URL to resolve full article url
     ###
     constructor: (config) ->
         @config = config
 
     ###
-    @param {Object} $block A cheerio object to parse
-    @param {String} field name of field to parse
-    @param {String, Object} An object or a string describing how to find the field, i.e. `'h1'` or `{ element: 'img', method: 'attr', arg: 'src' }`
+    @param $block {Object} A cheerio object to parse
+    @param field {String} name of field to parse
+    @param selectorObject {String, Object} An object or a string describing how to find the field, i.e. `'h1'` or `{ element: 'img', method: 'attr', arg: 'src' }`
     @return {String, Date} HTML/Text/Date for field (Date instance when `field is 'date'`)
     @example
         item.title = blockParser.parse $block, 'title', 'h1'
         # Where $block is a cheerio object
-    @throw {Error} `'NO_SELECTOR'`
+    @throw {Error} `NO_SELECTOR`
     ###
     parse: ($block, field, selectorObject) ->
         config = @config
@@ -106,10 +108,10 @@ module.exports = class BlockParser
 
     ###
     @private searches `$block` for elements matching `selectorObject`
-    @param {Object} $block A cheerio object
-    @param {String, Object} selectorObject A selector definition
+    @param $block {Object} A cheerio object
+    @param selectorObject {String, Object} A selector definition
     @return {Object} A cheerio object
-    @throw {Error} `'NO_SELECTOR'`
+    @throw {Error} `NO_SELECTOR`
     ###
     getElement = ($block, selectorObject) ->
         # A selector can be a string, like 'div:not(:first-child)'
@@ -125,8 +127,8 @@ module.exports = class BlockParser
 
     ###
     @private gets the actual content of an element (could be text, html or an attribute value)
-    @param {Object} $element A cheerio object
-    @param {String, Object} selectorObject A selector definition
+    @param $element {Object} A cheerio object
+    @param selectorObject {String, Object} A selector definition
     @return {String, null} the useful content of the `$element` as describe in the selector
     ###
     getContent = ($element, selectorObject) ->

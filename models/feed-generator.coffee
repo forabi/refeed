@@ -51,9 +51,9 @@ instead it emits a 'feedgenerated' event with the XML string.
 ###
 module.exports = class FeedGenerator extends EventEmitter
     ###
-    @param {String} feedId the unique identifier of the feed to generate
-    @param {Object} config Feed configuration object
-    @param {String} cachedXMLPath Path to an XML file representing a cached version of the feed
+    @param feedId {String} the unique identifier of the feed to generate
+    @param config {Object} Feed configuration object
+    @param cachedXMLPath {String} Path to an XML file representing a cached version of the feed
     ###
     constructor: (@feedId, config, @cachedXMLPath) ->
         if 'string' is typeof config.inherits

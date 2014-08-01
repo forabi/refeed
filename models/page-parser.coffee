@@ -21,8 +21,8 @@ The `config` object also includes some fallback properties.
 ###
 module.exports = class PageParser extends EventEmitter
     ###
-    @param {String} html The HTML of the webpage to parse
-    @param {Object} config The configuration object
+    @param html {String} The HTML of the webpage to parse
+    @param config {Object} The configuration object
     @option config {String} host The host part of the URL of the page, required for resolving full URLs
     @option config {Date} fallbackDate When a date selector has no matches, or can not be parsed, fallback to this date
     @option config {Object} selectors A map of CSS selectors of elements that correspond to fields in the RSS

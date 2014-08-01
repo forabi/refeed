@@ -27,14 +27,16 @@ be added as usual using the `Feed#item` method.
         }
     }
 
-    # You must listen for the `pageparsed` event before adding new items
-    feed.on 'pageparsed', ->
+    # You must listen for the `ready` event before adding new items
+    feed.on 'ready', ->
         feed.item {
             title: 'New post',
             date: ...
         }
 
     feed.load()
+
+@event ready - Emitted when all cached metadata and items have been parsed and added
 ###
 module.exports = class CachedFeed extends Feed
     ###
@@ -42,8 +44,8 @@ module.exports = class CachedFeed extends Feed
     ###
     lastArticleUrl: null
     ###
-    @param {String} xml XML string of the cached feed
-    @param {Object} config Configuration object passed to the internal `PageParser`, see {PageParser#constructor} for details
+    @param xml {String} XML string of the cached feed
+    @param config {Object} Configuration object passed to the internal `PageParser`, see {PageParser#constructor} for details
     ###
     constructor: (xml, config = { selectors: { } }) ->
         config = _.merge (_.clone config, yes), rss
@@ -75,8 +77,8 @@ module.exports = class CachedFeed extends Feed
 
     ###
     Adds an event listener on the internal page parser
-    @param {String} event Only `'ready'` is currently accepted
-    @param {Function} fn Function to call
+    @param event {String} Only `'ready'` is currently accepted
+    @param fn {Function} Function to call
     ###
     on: (event, fn) ->
         @_event_emitter.on event, fn

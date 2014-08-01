@@ -13,13 +13,13 @@ response body on success, or an error otherwise.
 ###
 module.exports = class PageLoader extends EventEmitter
     ###
-    @param {String} url The URL of the resource to load
+    @param url {String} The URL of the resource to load
     ###
     constructor: (@url) -> super()
 
     ###
     Loads the page, listeners for `pageloaded` and `error` should be added before this method is called
-    @param {Object} options Additional options for the internal `request` call
+    @param options {Object} Additional options for the internal `request` call
     ###
     load: (options = {}) ->
         options.url = @url
