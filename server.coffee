@@ -15,5 +15,3 @@ app.use '/feeds',
 
 app.listen config.server.port, config.server.host, ->
     log 'info', "Server listening on #{config.server.host}:#{config.server.port}"
-
-require './generate'
