@@ -9,39 +9,34 @@ cheerio      = require 'cheerio'
 
 ###
 A block parser is responsible for parsing a single field of article fields,
-for example a title or description field.
+for example a title or description field. It is also used to parse global
+metadata fields.
 
 @example
     blockParser = new BlockParser {
-        xmlMode: false,
-        selectors: {
-            title: ...,
-            item: {
-                block: ...
-            }
-        }
+        xmlMode: false
     }
 
-    item.title = blockParser.parse 'title', $block
+    item.title = blockParser.parse $block, 'title', 'h1'
 
 ###
 module.exports = class BlockParser
     ###
     @param {Object} config A configuration object
-    @option config {Object} selectors see {PageParser#constructor} for details
     @option config {Boolean} xmlMode
     ###
     constructor: (config) ->
         @config = config
 
     ###
-    @param {String} field name of field to parse
     @param {Object} $block A cheerio object to parse
-    @return {String} HTML/Text for field
+    @param {String} field name of field to parse
+    @param {String, Object} An object or a string describing how to find the field, i.e. `'h1'` or `{ element: 'img', method: 'attr', arg: 'src' }`
+    @return {String, Date} HTML/Text/Date for field (Date instance when `field is 'date'`)
     @example
-        item.title = blockParser.parse 'title', $block
+        item.title = blockParser.parse $block, 'title', 'h1'
         # Where $block is a cheerio object
-    @throw "NO_SELECTOR"
+    @throw {Error} `'NO_SELECTOR'`
     ###
     parse: ($block, field, selectorObject) ->
         config = @config
@@ -109,18 +104,31 @@ module.exports = class BlockParser
             else # Title, author, image_url...
                 getContent $el, selectorObject
 
+    ###
+    @private searches `$block` for elements matching `selectorObject`
+    @param {Object} $block A cheerio object
+    @param {String, Object} selectorObject A selector definition
+    @return {Object} A cheerio object
+    @throw {Error} `'NO_SELECTOR'`
+    ###
     getElement = ($block, selectorObject) ->
         # A selector can be a string, like 'div:not(:first-child)'
         # or an object like { element: '...', method: 'attr', arg: 'date-utime' }
         log 'debug', 'getElement', selectorObject
-        # try
-        if typeof selectorObject is 'string'
-            $block.find selectorObject
-        else
-            $block.find selectorObject.element
-        # catch e
-        #     throw new Error 'NO_SELECTOR'
+        try
+            if typeof selectorObject is 'string'
+                $block.find selectorObject
+            else
+                $block.find selectorObject.element
+        catch e
+            throw new Error 'NO_SELECTOR'
 
+    ###
+    @private gets the actual content of an element (could be text, html or an attribute value)
+    @param {Object} $element A cheerio object
+    @param {String, Object} selectorObject A selector definition
+    @return {String, null} the useful content of the `$element` as describe in the selector
+    ###
     getContent = ($element, selectorObject) ->
         if not selectorObject
             null
