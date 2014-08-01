@@ -46,11 +46,12 @@ module.exports = class PageParser extends EventEmitter
 
         super()
 
-        @$ = cheerio.load @html, _.pick config, 'xmlMode', 'decodeEntities'
+        @$ = cheerio.load @html, _.pick @config, 'xmlMode', 'decodeEntities'
 
-        if not config.selectors
+        if not @config.selectors
             throw new Error 'No selectors were specified
             for PageParser instance'
+
         @selectors = config.selectors
 
         log 'verbose', "PageParser initialized for feed #{@config.title}",
@@ -126,7 +127,7 @@ module.exports = class PageParser extends EventEmitter
                 done null, articles
 
             (articles, done) => # Get full pages
-                if @config.full_page
+                if @config.selectors.full_page
                     log 'warn', 'Feed set up to load full articles,
                     this may take a while!'
                     articles = async.mapSeries articles, @getFullPage, done

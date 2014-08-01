@@ -6,27 +6,32 @@ CachedFeed = require '../models/cached-feed'
 describe 'CachedFeed', ->
     xml = fs.readFileSync('./spec/test-files/hindawi.xml').toString()
     beforeEach ->
-        @cachedFeed = new CachedFeed xml, {
-            # config
-        }
+        @cachedFeed = new CachedFeed xml
 
-    it 'should parse cached feeds with zero configuration',
-    (done) ->
+    it 'should get the title from the xml', (done) ->
         @cachedFeed.parser.on 'pageparsed', =>
-            it 'should get the title from the xml', ->
-                expect(@cachedFeed.title).toBe 'مؤسسة هنداوي'
+            expect(@cachedFeed.title).toBe 'مؤسسة هنداوي'
+            done()
 
-            it 'should sort feeds correctly even without date', ->
-                expect(_.first(@cachedFeed.items).title).toBe 'عرائس وشياطين'
-                expect(_.last(@cachedFeed.items).title).toBe 'الإسلام وأوضاعنا السياسية'
+        @cachedFeed.load()
 
-            it 'should parse article data correctly', ->
-                expect(@cachedFeed.items[0].description).not.toBeNull()
-                expect(@cachedFeed.items[0].date).not.toBeDefined()
-                expect(@cachedFeed.items[0].author).not.toBeDefined()
-                expect(@cachedFeed.items[0].description.length).toEqual(3852)
-                expect(@cachedFeed.items[1].description.length).toEqual(3758)
 
+    it 'should sort feeds correctly even without date', (done) ->
+        @cachedFeed.parser.on 'pageparsed', =>
+            expect(_.first(@cachedFeed.items).title).toBe 'عرائس وشياطين'
+            expect(_.last(@cachedFeed.items).title).toBe 'الإسلام وأوضاعنا السياسية'
+            done()
+
+        @cachedFeed.load()
+
+
+    it 'should parse article data correctly', (done) ->
+        @cachedFeed.parser.on 'pageparsed', =>
+            expect(@cachedFeed.items[0].description).not.toBeNull()
+            expect(@cachedFeed.items[0].date).not.toBeDefined()
+            expect(@cachedFeed.items[0].author).not.toBeDefined()
+            expect(@cachedFeed.items[0].description.length).toEqual(3852)
+            expect(@cachedFeed.items[1].description.length).toEqual(3785)
             done()
 
         @cachedFeed.load()
