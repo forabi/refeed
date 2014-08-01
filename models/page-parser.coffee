@@ -57,6 +57,12 @@ module.exports = class PageParser extends EventEmitter
         log 'verbose', "PageParser initialized for feed #{@config.title}",
             @config
 
+    ###
+    @private Process a single article element finding all possible fields
+    @param $block {Object} A cheerio object represnting a single article block
+    @param fields {Array<String>} Field names used to look for matching fields inside the article
+    @param selectors {Object} Selectors for the specified `fields`
+    ###
     parseArticle: ($block, fields, selectors) ->
         article = { }
         # config.fallbackDate = startDate - items.length
@@ -70,15 +76,28 @@ module.exports = class PageParser extends EventEmitter
                 log 'error', "Error parsing #{property}:", e.toString()
         return article
 
-    parseMetadataField: ($root, key, selector, done) ->
+    ###
+    @private Process an element (usually the root element) to find global feed metadata
+    @param $root {Object} A cheerio object represnting the root element of the page
+    @param key {String} The metadata key to look for
+    @param selector {Object} The selector matching the `key`
+    ###
+    parseMetadataField: ($root, key, selector) ->
         @metadataParser.parse $root, key, selector
 
-    getFullPage: (article, done) ->
+    ###
+    @todo Test this method
+    @private Load and process the full page of an article and replace its description with full page content
+    @param article {Object} An parsed article object, i.e. `{ title: '...', description: '...' }`
+    @param selector {String} The selector to use to find the main content block
+    @param done {Function} A callback function to call on finish
+    ###
+    getFullPage: (article, selector, done) ->
         loader = new PageLoader article.url
 
         loader.on 'pageloaded', (html) ->
             $$ = cheerio.load html
-            article.description = ($$ config.selectors.full_page).html()
+            article.description = ($$ selector).html()
             done null, article
 
         loader.on 'error', (err) ->
@@ -131,7 +150,9 @@ module.exports = class PageParser extends EventEmitter
                 if @config.selectors.full_page
                     log 'warn', 'Feed set up to load full articles,
                     this may take a while!'
-                    articles = async.mapSeries articles, @getFullPage, done
+                    articles = async.mapSeries articles, (article, callback) =>
+                        @getFullPage article, config.slectors.full_page, callback
+                    , done
                 else done null, articles
 
             (articles, done) => # Emit
