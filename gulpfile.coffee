@@ -33,6 +33,6 @@ gulp.task 'test', ->
     gulp.src config.src.specs, (cwd: config.src.root)
     .pipe plugins.jasmine
         timeout: 10000
-        reporter: new TerminalReporter verbosity: 1, color: yes
+        reporter: new TerminalReporter verbosity: 5, color: yes
 
 gulp.task 'default', ['lint', 'test']
