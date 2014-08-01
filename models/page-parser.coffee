@@ -27,16 +27,16 @@ module.exports = class PageParser extends EventEmitter
     @option config {Date} fallbackDate When a date selector has no matches, or can not be parsed, fallback to this date
     @option config {Object} selectors A map of CSS selectors of elements that correspond to fields in the RSS
     @option config {Boolean} xmlMode Set to `true` if the `html` parameter is XML
-    @option config.selectors {String} title
-    @option config.selectors {String} description
-    @option config.selectors {String} author
+    @option config.selectors {String, Object} title
+    @option config.selectors {String, Object} description
+    @option config.selectors {String, Object} author
     @option config.selectors {Object} item Selectors for a single article
-    @option config.selectors.item {String} block Selector for the root of the article
-    @option config.selectors.item {String} title (a selector to match on the `block` element)
-    @option config.selectors.item {String} author (a selector to match on the `block` element)
-    @option config.selectors.item {String} description (a selector to match on the `block` element)
-    @option config.selectors.item {String} date (a selector to match on the `block` element)
-    @option config.selectors.item {String} url (a selector to match on the `block` element)
+    @option config.selectors.item {String, Object} block Selector for the root of the article
+    @option config.selectors.item {String, Object} title (a selector to match on the `block` element)
+    @option config.selectors.item {String, Object} author (a selector to match on the `block` element)
+    @option config.selectors.item {String, Object} description (a selector to match on the `block` element)
+    @option config.selectors.item {String, Object} date (a selector to match on the `block` element)
+    @option config.selectors.item {String, Object} url (a selector to match on the `block` element)
     @option config.selectors {String, undefined} full_page If specified, the parser will try to load and extract the full page located at `item.url`
     ###
     constructor: (@html, @config) ->
@@ -56,6 +56,35 @@ module.exports = class PageParser extends EventEmitter
         log 'verbose', "PageParser initialized for feed #{@config.title}",
             @config
 
+    parseArticle: ($block, fields, selectors) ->
+        article = { }
+        # config.fallbackDate = startDate - items.length
+        for property in fields
+            try
+                value =
+                    @blockParser.parse $block, property, selectors[property]
+
+                article[property] = value if value
+            catch e
+                log 'error', "Error parsing #{property}:", e.toString()
+        return article
+
+    parseMetadataField: ($root, key, selector, done) ->
+        @blockParser.parse $root, key, selector
+
+    getFullPage: (article, done) ->
+        loader = new PageLoader article.url
+
+        loader.on 'pageloaded', (html) ->
+            $$ = cheerio.load html
+            article.description = ($$ config.selectors.full_page).html()
+            done null, article
+
+        loader.on 'error', (err) ->
+            done err
+
+        loader.load config
+
     ###
     Starts parsing the page.
      * Emits `item` on each new article.
@@ -63,75 +92,63 @@ module.exports = class PageParser extends EventEmitter
      * Emits `pageparsed` when all articles has been processed.
     ###
     start: ->
-        self = this
-        $ = @$
-        config = @config
-        blockParser = new BlockParser @config
+        # self = this
+        $root = @$.root()
+        @blockParser = new BlockParser @config
 
-        startDate = new Date
-        items = []
+        articleSelectors = @selectors.item
 
-        for metadata in [
+        metadataFields   = _.chain(@selectors).pick([
             'title', 'author', 'description', 'url', 'language',
             'categories', 'copyright', 'image_url', 'managingEditor',
             'docs', 'webMaster'
-        ]
-            matches = $ "#{@selectors[metadata]}:not(#{@selectors.item.block})"
-            if matches.length > 0
-                object = { }
-                object[metadata] = matches.text()
-                self.emit 'metadata', object
+        ]).keys().value()
 
+        articleFields    = _.chain(@selectors.item)
+            .omit('block').keys().value()
 
-        log 'debug', 'Block selector is', @selectors.item.block
-        log 'verbose', "Found #{$(@selectors.item.block).length} items in page"
+        articles = $root.find(@selectors.item.block).toArray()
 
-        $(@selectors.item.block).each ->
-            try
-                $block = $ this
-                item = new Object
-                config.fallbackDate = startDate - items.length
+        log 'debug', 'Available metadata fields', metadataFields
+        log 'debug', 'Available article fields', articleFields
+        log 'debug', 'Block selector is', articleSelectors.block
+        log 'debug', "Found #{articles.length} items in page"
 
-                for property in [
-                    'title', 'author', 'description', 'url', 'date'
-                ]
-                    parsedBlock = blockParser.parse property, $block
-                    if parsedBlock then item[property] = parsedBlock
+        async.waterfall [
+            (done) => # Get basic articles
+                for article, key in articles
+                    try
+                        articles[key] =
+                            @parseArticle(@$(article),
+                                articleFields, articleSelectors)
+                    catch err
+                        return done err
+                done null, articles
 
-                items.push item
-                log 'verbose', 'Emitting item', item.url
-                self.emit 'item', item unless config.selectors.full_page
+            (articles, done) => # Get full pages
+                if @config.full_page
+                    log 'warn', 'Feed set up to load full articles,
+                    this may take a while!'
+                    articles = async.mapSeries articles, @getFullPage, done
+                else done null, articles
 
-            catch err
-                log 'error', 'PageParser error', err.message
-                self.emit 'error', err
+            (articles, done) => # Emit
+                _.map articles, (article) => @emit 'item', article
+                done()
 
-        if config.selectors.full_page
-            log 'warn', 'Feed set up to load full articles,
-            this may take a while!'
+        ], (err) =>
+            return @emit 'error', err if err
 
-            getFullPage = (item, done) ->
-                loader = new PageLoader item.url
+            $root.find(articleSelectors.block).remove()
+            for key in metadataFields
+                value = @parseMetadataField $root, key, @selectors[key]
+                if value
+                    object = { }
+                    object[key] = value
+                    @emit 'metadata', object
 
-                loader.on 'pageloaded', (html) ->
-                    log 'info', 'Article page loaded', item.url
-                    $$ = cheerio.load html
-                    log 'info', 'Article length:', html.length
-                    item.description = ($$ config.selectors.full_page).html()
-                    done null, item
+            @emit 'pageparsed'
 
-                loader.on 'error', (err) ->
-                    done err
-
-                log 'info', 'Loading article page', item.url
-                loader.load config
-
-            async.mapLimit items, 3, getFullPage, (err, items) =>
-                return @emit 'error', err if err
-                @emit 'item', item for item in items
-                @emit 'pageparsed'
-
-        else @emit 'pageparsed'
 
     ###
     @property {String} nextPage The URL of the next page to load, found using the `nextPage` selector
@@ -139,7 +156,8 @@ module.exports = class PageParser extends EventEmitter
     Object.defineProperty @prototype, 'nextPage', {
         get: ->
             href = @$(@selectors.nextPage).attr('href') || ''
-            if url then url.resolve @config.host, href else null
+            host = @config.host
+            if url then url.resolve host, href else null
     }
 
     ###
