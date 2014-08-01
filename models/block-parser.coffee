@@ -4,6 +4,7 @@ EventEmitter = require('events').EventEmitter
 url          = require 'url'
 # _            = require 'lodash'
 chrono       = require 'chrono-node'
+moment       = require 'moment'
 cheerio      = require 'cheerio'
 
 ###
@@ -27,7 +28,7 @@ for example a title or description field.
 module.exports = class BlockParser
     ###
     @param {Object} config A configuration object
-    @option config {Object} selectors see {FeedGenerator#constructor} for details
+    @option config {Object} selectors see {PageParser#constructor} for details
     @option config {Boolean} xmlMode
     ###
     constructor: (config) ->
@@ -40,16 +41,20 @@ module.exports = class BlockParser
     @example
         item.title = blockParser.parse 'title', $block
         # Where $block is a cheerio object
+    @throw "NO_SELECTOR"
     ###
-    parse: (field, $block) ->
+    parse: ($block, field, selectorObject) ->
         config = @config
-        selectors = config.selectors
-        $el = $block.removeClass().find selectors.item[field]
+
+        log 'debug', "Parsing block for #{field}, selector:", selectorObject
+        $el = getElement $block, selectorObject
+
+        host = config.host
+
         switch field
-            when 'title' or 'author'
-                $el.text() || null
             when 'description'
                 mode = if config.xmlMode then 'text' else 'html'
+                # log 'debug', "Parsing description in #{mode} mode..."
                 try
                     str = ''
 
@@ -65,24 +70,60 @@ module.exports = class BlockParser
                         $$('a').each ->
                             $this = $$ this
                             href = $this.attr 'href'
-                            href = url.resolve config.host, href
+                            href = url.resolve host, href
                             $this.attr 'href', href
 
                         str = $$.html()
 
                     str.trim() || null
                 catch e
-                    console.log 'Error in parsing article description', e
+                    log 'error', 'Error in parsing article description',
+                        e.toString()
                     $el[mode]().trim() || null
             when 'url'
-                relative = $el.attr('href') || $el.text() || null
+                relative = $el.attr('href') || getContent $el, selectorObject
                 try
-                    url.resolve config.host, relative
+                    url.resolve host, relative
                 catch
                     relative
             when 'date'
-                try
-                    chrono.parseDate $el.text()
-                catch e
-                    log 'warn', 'Error parsing date', e
-                    config.fallbackDate || null
+                dateString = getContent($el, selectorObject).trim()
+                log 'debug', 'Date string is', dateString
+                date = new Date dateString
+                if not dateString
+                    return config.fallbackDate || null
+                else if moment(date).isValid()
+                    return new Date dateString
+                else
+                    try
+                        chronoDate = chrono.parseDate dateString
+                        # Chrono usually parses dates like
+                        # Thursday at 12:05 am as being in the future,
+                        # we do not want that.
+                        if chronoDate < Date.now()
+                            return chronoDate
+                        else throw new Error 'DATE_PARSE_FAIL'
+                    catch e
+                        log 'warn', 'DATE_PARSE_FAIL', e
+                        date = config.fallbackDate || null
+            else # Title, author, image_url...
+                getContent $el, selectorObject
+
+    getElement = ($block, selectorObject) ->
+        # A selector can be a string, like 'div:not(:first-child)'
+        # or an object like { element: '...', method: 'attr', arg: 'date-utime' }
+        log 'debug', 'getElement', selectorObject
+        # try
+        if typeof selectorObject is 'string'
+            $block.find selectorObject
+        else
+            $block.find selectorObject.element
+        # catch e
+        #     throw new Error 'NO_SELECTOR'
+
+    getContent = ($element, selectorObject) ->
+        if not selectorObject
+            null
+        else if typeof selectorObject is 'string'
+            $element.text().trim()
+        else $element[selectorObject.method](selectorObject.arg || undefined)
