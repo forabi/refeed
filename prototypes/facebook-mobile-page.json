@@ -6,6 +6,11 @@
     "selectors": {
         "title": "#m_timeline_cover_section tbody td:nth-child(2) #u_0_0 span:first-child",
         "description": "[data-sigil='cover-info-section'] > div:nth-child(3)",
+        "image_url": {
+            "element": "#m_timeline_cover_section > div:first-child img",
+            "method": "attr",
+            "arg": "src"
+        },
         "item": {
             "block": "#recent [data-sigil='tlUnit']:not(:nth-child(1)) > div",
             "author": "div:first-child > span",

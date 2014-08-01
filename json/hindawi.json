@@ -4,6 +4,7 @@
     "url": {
         "href": "http://www.hindawi.org/books/"
     },
+    "image_url": "http://www.hindawi.org/images/logos/logo.jpg",
     "language": "ar",
     "selectors": {
         "item": {
