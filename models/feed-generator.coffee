@@ -157,7 +157,7 @@ module.exports = class FeedGenerator extends EventEmitter
                 parser.on 'metadata', (object) =>
                     log 'debug', 'Got metadata:', object
                     for key, value of object
-                        @feed[key] ?= value
+                        @feed[key] = value if not @feed[key]
 
                 parser.on 'item', (item) =>
                     if not item.url

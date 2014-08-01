@@ -55,7 +55,7 @@ module.exports = class CachedFeed extends Feed
 
         @parser.on 'metadata', (object) =>
             for key, value of object
-                @[key] = value
+                @[key] = value if not @[key]
 
         super config
 
