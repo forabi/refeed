@@ -11,6 +11,8 @@ async           = require 'async'
 
 # en              = require('lingo').en
 
+TerminalReporter = require('jasmine-reporters').TerminalReporter
+
 plugins = (require 'gulp-load-plugins')()
 
 config = _.defaults gutil.env,
@@ -18,6 +20,7 @@ config = _.defaults gutil.env,
         root: '.'
         coffee: ['{models,spec}/**/*.coffee', '*.coffee']
         specs: 'spec/*.coffee'
+        # specs: 'spec/page-parser.spec.coffee'
 
 gulp.task 'coffeelint', ->
     gulp.src config.src.coffee, (cwd: config.src.root)
@@ -28,6 +31,8 @@ gulp.task 'lint', ['coffeelint']
 
 gulp.task 'test', ->
     gulp.src config.src.specs, (cwd: config.src.root)
-    .pipe plugins.jasmine timeout: 10000
+    .pipe plugins.jasmine
+        timeout: 10000
+        reporter: new TerminalReporter verbosity: 1, color: yes
 
 gulp.task 'default', ['lint', 'test']
