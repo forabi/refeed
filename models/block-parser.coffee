@@ -84,11 +84,11 @@ module.exports = class BlockParser
                 catch
                     relative
             when 'date'
-                dateString = getContent($el, selectorObject).trim()
+                dateString = getContent($el, selectorObject)
                 log 'debug', 'Date string is', dateString
                 date = new Date dateString
                 if not dateString
-                    return config.fallbackDate || null
+                    return config?.fallbackDate || null
                 else if moment(date).isValid()
                     return new Date dateString
                 else
@@ -102,7 +102,7 @@ module.exports = class BlockParser
                         else throw new Error 'DATE_PARSE_FAIL'
                     catch e
                         log 'warn', 'DATE_PARSE_FAIL', e
-                        date = config.fallbackDate || null
+                        date = config?.fallbackDate || null
             else # Title, author, image_url...
                 getContent $el, selectorObject
 
@@ -135,5 +135,7 @@ module.exports = class BlockParser
         if not selectorObject
             null
         else if typeof selectorObject is 'string'
-            $element.first().text().trim()
+            str = $element.first().text().trim()
+            str = null if not str.length
+            str
         else $element[selectorObject.method](selectorObject.arg || undefined)

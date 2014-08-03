@@ -1,10 +1,13 @@
 fs = require 'fs'
 _ = require 'lodash'
+async = require 'async'
 
 CachedFeed = require '../models/cached-feed'
 
 describe 'CachedFeed', ->
     xml = fs.readFileSync('./spec/test-files/hindawi.xml').toString()
+    xml2 = fs.readFileSync('./spec/test-files/alomari.xml').toString()
+
     beforeEach ->
         @cachedFeed = new CachedFeed xml
 
@@ -35,3 +38,18 @@ describe 'CachedFeed', ->
             done()
 
         @cachedFeed.load()
+
+    it 'should not mix up titles of two different feeds (weird)', (done) ->
+        @cachedFeed2 = new CachedFeed xml2
+
+        async.parallel [
+            (done) =>
+                @cachedFeed.on 'ready', -> done()
+                @cachedFeed.load()
+
+            (done) =>
+                @cachedFeed2.on 'ready', -> done()
+                @cachedFeed2.load()
+        ], (err) =>
+            expect(@cachedFeed.title).not.toEqual(@cachedFeed2.title)
+            done()

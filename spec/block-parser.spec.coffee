@@ -28,3 +28,10 @@ describe 'BlockParser', ->
     it 'should parse strings as HTML by default', ->
         result = @blockParser.parse @html.root(), 'title', 'h1'
         expect(result).toEqual 'Title'
+
+    it 'should return `null` for fields without matching selectors', ->
+        date = @blockParser.parse @html.root(), 'date', '.date'
+        expect(date).toBeNull()
+
+        url = @blockParser.parse @html.root(), 'url', '.link'
+        expect(url).toBeNull()
