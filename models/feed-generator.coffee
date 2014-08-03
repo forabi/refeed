@@ -121,6 +121,7 @@ module.exports = class FeedGenerator extends EventEmitter
         loaded           = 0
         loadedItems      = []
         totalCachedItems = @feed.items.length || 0
+        newItems         = []
         parser           = null
 
         noMoreArticles = =>
@@ -133,8 +134,8 @@ module.exports = class FeedGenerator extends EventEmitter
         end = (err) =>
             return @emit 'error', err if err
 
-            # if _.some @feed.items, ((i) -> i.date?)
-                # @feed.items = _.sortBy(@feed.items, 'date').reverse()
+            # This should fix order when items have no date specified
+            @feed.items = Array::concat newItems, @feed.items
 
             xml = @feed.xml()
             log 'verbose', 'Feed is ready be written!'
@@ -169,7 +170,11 @@ module.exports = class FeedGenerator extends EventEmitter
                             i.url is item.url
 
                     if not exists
-                        @feed.item item
+                        newItems.push _.defaults item, (
+                            categories: []
+                            enclosure: no
+                            title: ''
+                        )
                         log 'debug', 'Added new item:',
                             _.omit item, 'description'
                     else
