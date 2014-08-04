@@ -1,3 +1,5 @@
+expect = require 'expect.js'
+
 PageLoader = require '../models/page-loader'
 
 describe 'PageLoader', ->
@@ -23,8 +25,8 @@ describe 'PageLoader', ->
         @config.gzip = yes
 
         @loader.on 'pageloaded', (body) ->
-            expect(body).not.toBeNull()
-            expect(body).toMatch /<html/
+            expect(body).not.to.be null
+            expect(body).to.match /<html/
             done()
 
         @loader.on 'error', (err) ->

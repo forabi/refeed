@@ -11,8 +11,6 @@ async           = require 'async'
 
 # en              = require('lingo').en
 
-TerminalReporter = require('jasmine-reporters').TerminalReporter
-
 plugins = (require 'gulp-load-plugins')()
 
 config = _.defaults gutil.env,
@@ -31,8 +29,8 @@ gulp.task 'lint', ['coffeelint']
 
 gulp.task 'test', ->
     gulp.src config.src.specs, (cwd: config.src.root)
-    .pipe plugins.jasmine
+    .pipe plugins.mocha
         timeout: 10000
-        reporter: new TerminalReporter verbosity: 5, color: yes
+        reporter: 'spec'
 
 gulp.task 'default', ['lint', 'test']

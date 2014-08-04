@@ -99,8 +99,8 @@ module.exports = class FeedGenerator extends EventEmitter
                     log 'warn', "Feed #{@feedId} is not cached,
                     was expected at #{@cachedXMLPath}"
                 else
-                    log 'error', "Something went wrong while loading the cached feed,
-                    rebuilding...", e.toString()
+                    log 'error', 'Something went wrong while loading the cached feed,
+                    rebuilding...', e.toString()
 
     ###
     @property [Number] The maximum number of pages to load, each page instantiates a new `PageLoader`

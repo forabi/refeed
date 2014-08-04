@@ -1,3 +1,5 @@
+expect = require 'expect.js'
+
 _ = require 'lodash'
 
 PageParser = require '../models/page-parser'
@@ -38,7 +40,7 @@ describe 'PageParser', ->
 
         parser = new PageParser html, config
 
-        expect(parser).toBeDefined()
+        expect(parser).not.to.be undefined
 
         parser.on 'error', (err) ->
             throw err
@@ -51,10 +53,10 @@ describe 'PageParser', ->
                 @metadata[key] = value
 
         parser.on 'pageparsed', =>
-            expect(@metadata.title).toBe 'Title'
-            expect(@metadata.description).toBe 'Page description'
+            expect(@metadata.title).to.be 'Title'
+            expect(@metadata.description).to.be 'Page description'
 
-            expect(@items).toEqual [
+            expect(@items).to.eql [
                 ( title: 'New Article', description: 'Hello world, again!' )
                 ( title: 'Old Article', description: 'Hello world!' )
             ]

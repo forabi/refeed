@@ -27,7 +27,7 @@ module.exports = class BlockParser
     @option config {String} mode either 'text' or 'html', if xmlMode is set, this option is ignored
     @option config {String} host If parsing a URL block, specifiy the host part of the feed URL to resolve full article url
     ###
-    constructor: (config) ->
+    constructor: (config = { mode: 'html' }) ->
         @config = config
 
     ###
@@ -41,6 +41,7 @@ module.exports = class BlockParser
     @throw {Error} `NO_SELECTOR`
     ###
     parse: ($block, field, selectorObject) ->
+        throw new Error() if not ($block and field and selectorObject)
         config = @config
 
         log 'debug', "Parsing block for #{field}, selector:", selectorObject
@@ -50,7 +51,7 @@ module.exports = class BlockParser
 
         switch field
             when 'description'
-                mode = if config.xmlMode then 'text' else config.mode || 'html'
+                mode = if config?.xmlMode then 'text' else config?.mode || 'html'
                 # log 'debug', "Parsing description in #{mode} mode..."
                 try
                     str = ''
