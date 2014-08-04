@@ -14,4 +14,5 @@ app.use '/feeds',
     express.static(path.join config.dirs.root, config.dirs.feeds)
 
 app.listen config.server.port, config.server.host, ->
-    log 'info', "Server listening on #{config.server.host}:#{config.server.port}"
+    log 'info', "Server listening on
+    #{config.server.host}:#{config.server.port}"
