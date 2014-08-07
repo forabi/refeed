@@ -64,3 +64,5 @@ describe 'PageParser', ->
             done()
 
         parser.start()
+
+    it 'should support loading full articles'

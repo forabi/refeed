@@ -85,13 +85,35 @@ module.exports = class BlockParser
                 catch
                     relative
             when 'date'
-                dateString = getContent($el, selectorObject)
+                ar_map = {
+                    '٠': '0'
+                    '١': '1'
+                    '٢': '2'
+                    '٣': '3'
+                    '٤': '4'
+                    '٥': '5'
+                    '٦': '6'
+                    '٧': '7'
+                    '٨': '8'
+                    '٩': '9'
+                }
+
+                dateString =
+                    getContent($el, selectorObject)
+
+                try dateString = dateString.replace /[٠١٢٣٤٥٦٧٨٩]/gi, (c) -> ar_map[c]
+
                 log 'debug', 'Date string is', dateString
                 date = new Date dateString
                 if not dateString
                     return config?.fallbackDate || null
                 else if moment(date).isValid()
                     return new Date dateString
+                else if config?.dateFormat and config?.language
+                    moment.locale(config.language)
+                    momentDate = moment(dateString, config.dateFormat)
+                    moment.locale 'en'
+                    return momentDate.toDate()
                 else
                     try
                         chronoDate = chrono.parseDate dateString

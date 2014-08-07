@@ -37,7 +37,7 @@ module.exports = class PageParser extends EventEmitter
     @option config.selectors.item {String, Object} description (a selector to match on the `block` element)
     @option config.selectors.item {String, Object} date (a selector to match on the `block` element)
     @option config.selectors.item {String, Object} url (a selector to match on the `block` element)
-    @option config.selectors {String, undefined} full_page If specified, the parser will try to load and extract the full page located at `item.url`
+    @option config.selectors {String, undefined} fullPage If specified, the parser will try to load and extract the full page located at `item.url`
     ###
     constructor: (@html, @config) ->
         if not @html
@@ -92,13 +92,12 @@ module.exports = class PageParser extends EventEmitter
     @param selector {String} The selector to use to find the main content block
     @param done {Function} A callback function to call on finish
     ###
-    getFullPage: (article, selector, done) ->
+    getFullPage: (article, selector, config, done) ->
         loader = new PageLoader article.url
 
         loader.on 'pageloaded', (html) ->
-            $$ = cheerio.load html
-            article.description = ($$ selector).html()
-            done null, article
+            log 'debug', "Full page loaded for #{article.url}"
+            done null, html
 
         loader.on 'error', (err) ->
             done err
@@ -147,11 +146,19 @@ module.exports = class PageParser extends EventEmitter
                 done null, articles
 
             (articles, done) => # Get full pages
-                if @config.selectors.full_page
+                if @config.selectors.fullPage
                     log 'warn', 'Feed set up to load full articles,
                     this may take a while!'
                     articles = async.mapSeries articles, (article, callback) =>
-                        @getFullPage article, config.slectors.full_page, callback
+                        @getFullPage article, @config.selectors.fullPage, @config, (err, html) =>
+                            return callback err if err
+
+                            $$ = cheerio.load(html).root()
+
+                            for key, selector of @config.selectors.fullPage
+                                article[key] = @articleParser.parse $$, key, selector
+
+                            callback null, article
                     , done
                 else done null, articles
 

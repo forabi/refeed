@@ -1,0 +1,24 @@
+{
+    "title": "مؤسسة هنداوي - المدونة",
+    "host": "http://www.hindawi.org/",
+    "url": {
+        "href": "http://www.hindawi.org/blogs/"
+    },
+    "image_url": "http://www.hindawi.org/images/logos/logo.jpg",
+    "language": "ar-sa",
+    "dateFormat": "LLL",
+    "selectors": {
+        "item": {
+            "block": "#items li",
+            "title": "a[href^='/blogs']",
+            "author": "a[href^='/contributors']",
+            "description": "p",
+            "url": "a:first-child"
+        },
+        "fullPage": {
+            "description": ".column_two > :not(:nth-child(2)):not(:last-child)",
+            "date": ".article_info > h2:last-of-type"
+        },
+        "nextPage": ".next_float a"
+    }
+}

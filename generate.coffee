@@ -18,6 +18,8 @@ feeds =
     fs.readdirSync './json'
     .map (i) -> i.substr 0, i.lastIndexOf '.'
 
+feeds = ['hindawi-blog']
+
 log 'info', "Feed list contains #{feeds.length} items"
 
 startFeed = (feedId) ->
