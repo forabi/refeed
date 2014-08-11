@@ -16,7 +16,8 @@
             "url": "a:first-child"
         },
         "fullPage": {
-            "description": ".column_two > :not(:nth-child(2)):not(:last-child)",
+            "root": ".column_two",
+            "description": "*:not(:nth-child(2)):not(:last-child)",
             "date": ".article_info > h2:last-of-type"
         },
         "nextPage": ".next_float a"

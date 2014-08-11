@@ -49,6 +49,7 @@ module.exports = class CachedFeed extends Feed
     ###
     constructor: (xml, config = { selectors: { } }) ->
         config = _.merge (_.clone config, yes), (_.clone rss, yes)
+        delete config.selectors.fullPage
         config.xmlMode = yes
         config.decodeEntities = yes
 

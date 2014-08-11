@@ -12,6 +12,7 @@
                 "method": "text"
             },
             "date": "pubDate"
-        }
+        },
+        "fullPage": false
     }
 }

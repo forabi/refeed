@@ -1,0 +1,8 @@
+{
+    "inherits": "facebook-desktop-page",
+    "title": "السعودي العلمي",
+    "url": {
+        "pathname": "/ScientificSaudi"
+    },
+    "language": "ar-sa"
+}
