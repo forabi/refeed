@@ -10,7 +10,7 @@
         "item": {
             "block": ".text_area",
             "title": "h1",
-            "author": "h2",
+            "author": "h2 a:first-of-type",
             "description": ".content_text",
             "url": "h1 a"
         },
